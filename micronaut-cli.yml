@@ -1,0 +1,6 @@
+applicationType: default
+defaultPackage: com.pedrovh
+testFramework: junit
+sourceLanguage: java
+buildTool: maven
+features: [app-name, http-client, jackson-databind, java, java-application, junit, log4j2, maven, maven-enforcer-plugin, micronaut-aot, netty-server, properties, readme, shade]
