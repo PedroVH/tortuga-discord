@@ -60,7 +60,7 @@ public abstract class AbstractAudioLoadResultHandler implements AudioLoadResultH
         // start
         log.warn("[{}] no matches found for {}", server, identifier);
         EmbedBuilder embed = new EmbedBuilder()
-                .setTitle(String.format("️%s No matches found...", Constants.EMOJI_ERROR))
+                .setTitle(String.format("️%s No matches found...", Constants.EMOJI_WARNING))
                 .setColor(Constants.YELLOW);
 
         respondNoMatches(embed);

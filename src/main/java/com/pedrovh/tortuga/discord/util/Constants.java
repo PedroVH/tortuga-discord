@@ -16,6 +16,7 @@ public class Constants {
     public final String YOUTUBE_QUERY = "ytsearch: ";
 
     public final String EMOJI_SUCCESS = "✅";
+    public final String EMOJI_WARNING = "⚠️";
     public final String EMOJI_ERROR = "❌";
     public final String EMOJI_PONG = "🏓";
     public final String EMOJI_SONG = "🎶";

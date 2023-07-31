@@ -10,6 +10,7 @@ import org.javacord.api.DiscordApi;
 import org.javacord.api.entity.channel.ServerVoiceChannel;
 import org.javacord.api.entity.message.Message;
 import org.javacord.api.entity.message.MessageBuilder;
+import org.javacord.api.entity.message.MessageFlag;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
 import org.javacord.api.entity.server.Server;
 import org.javacord.api.entity.user.User;
@@ -88,8 +89,9 @@ public class MusicService {
             log.info("[{}] unable to pause: GuildAudioManager not found", server.getName());
             response.addEmbed(
                     new EmbedBuilder()
-                            .setTitle(String.format("%s There's nothing to pause!", Constants.EMOJI_ERROR))
+                            .setTitle(String.format("%s There's nothing to pause!", Constants.EMOJI_WARNING))
                             .setColor(Constants.YELLOW))
+                    .setFlags(MessageFlag.EPHEMERAL)
                     .respond();
         }
     }
@@ -112,11 +114,12 @@ public class MusicService {
                                     .setColor(Constants.GREEN))
                     .respond();
         } else {
-            log.info("[{}] unable to pause: GuildAudioManager not found", server.getName());
+            log.info("[{}] unable to stop: GuildAudioManager not found", server.getName());
             response.addEmbed(
                             new EmbedBuilder()
-                                    .setTitle(String.format("%s There's nothing to pause!", Constants.EMOJI_ERROR))
+                                    .setTitle(String.format("%s There's nothing to stop!", Constants.EMOJI_WARNING))
                                     .setColor(Constants.YELLOW))
+                    .setFlags(MessageFlag.EPHEMERAL)
                     .respond();
         }
     }
@@ -174,7 +177,7 @@ public class MusicService {
             log.info("[{}] unable to display queue: GuildAudioManager not found", server.getName());
             response.addEmbed(
                             new EmbedBuilder()
-                                    .setTitle(String.format("%s There's no queue!", Constants.EMOJI_ERROR))
+                                    .setTitle(String.format("%s There's no queue!", Constants.EMOJI_WARNING))
                                     .setColor(Constants.YELLOW))
                     .respond();
         }

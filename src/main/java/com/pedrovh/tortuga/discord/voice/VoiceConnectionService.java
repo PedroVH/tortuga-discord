@@ -81,7 +81,7 @@ public class VoiceConnectionService {
     }
 
     public Optional<GuildAudioManager> getGuildAudioManager(String guildId) {
-        return Optional.of(audioManagers.get(guildId));
+        return Optional.ofNullable(audioManagers.get(guildId));
     }
 
 }
