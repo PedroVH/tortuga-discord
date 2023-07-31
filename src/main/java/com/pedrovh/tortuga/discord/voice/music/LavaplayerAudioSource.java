@@ -1,4 +1,4 @@
-package com.pedrovh.tortuga.discord.music;
+package com.pedrovh.tortuga.discord.voice.music;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.track.playback.AudioFrame;

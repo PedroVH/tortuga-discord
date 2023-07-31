@@ -1,7 +1,7 @@
 package com.pedrovh.tortuga.discord.slash.command.voice;
 
 import com.pedrovh.tortuga.discord.exception.BotException;
-import com.pedrovh.tortuga.discord.music.MusicService;
+import com.pedrovh.tortuga.discord.voice.music.MusicService;
 import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
 

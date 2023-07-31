@@ -1,4 +1,4 @@
-package com.pedrovh.tortuga.discord.music;
+package com.pedrovh.tortuga.discord.voice.music;
 
 import com.pedrovh.tortuga.discord.util.Constants;
 import com.pedrovh.tortuga.discord.util.TrackUtil;
@@ -11,9 +11,12 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.javacord.api.entity.channel.TextChannel;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
+import org.javacord.api.entity.server.Server;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -21,16 +24,17 @@ import java.util.concurrent.LinkedBlockingQueue;
 @Getter
 public class TrackScheduler extends AudioEventAdapter {
 
-    private BlockingQueue<AudioTrack> queue;
+    private final BlockingQueue<AudioTrack> queue;
     private final AudioPlayer player;
-    private final String guildName;
+    private final Server server;
     private final TextChannel textChannel;
 
     private boolean loop;
+    private Instant latestEndOfQueue;
 
-    public TrackScheduler(AudioPlayer player, String guildName, TextChannel textChannel) {
+    public TrackScheduler(AudioPlayer player, Server server, TextChannel textChannel) {
         this.player = player;
-        this.guildName = guildName;
+        this.server = server;
         this.textChannel = textChannel;
         this.queue = new LinkedBlockingQueue<>();
     }
@@ -56,14 +60,14 @@ public class TrackScheduler extends AudioEventAdapter {
         // something is playing, it returns false and does nothing. In that case the player was already playing so this
         // track goes to the queue instead.
         if (!player.startTrack(track, true)) {
-            log.info("[{}] adding {} to queue: {}", guildName, track.getInfo().title, queue.offer(track));
+            log.info("[{}] adding {} to queue: {}", server.getName(), track.getInfo().title, queue.offer(track));
             textChannel.sendMessage(
                             new EmbedBuilder()
                                     .setTitle(String.format("%s %s added to the queue", Constants.EMOJI_SONG, track.getInfo().title))
                                     .setDescription(track.getInfo().author)
                                     .setColor(Constants.GREEN));
         } else {
-            log.info("[{}] playing {}", guildName, track.getInfo().title);
+            log.info("[{}] playing {}", server.getName(), track.getInfo().title);
             textChannel.sendMessage(
                     new EmbedBuilder()
                             .setTitle(String.format(
@@ -77,21 +81,46 @@ public class TrackScheduler extends AudioEventAdapter {
     }
 
     public List<AudioTrack> queuePlaylist(AudioPlaylist playlist) {
-        List<AudioTrack> adding = new ArrayList<>();
+        List<AudioTrack> tracks = getPlaylistAfterSelectedTrack(playlist);
+
+        log.info("[{}] adding playlist {} to queue", server.getName(), playlist.getName());
+        tracks.forEach(queue::offer);
+
+        if(player.getPlayingTrack() == null)
+            nextTrack();
+
+        return tracks;
+    }
+
+    public List<AudioTrack> addPlaylistToQueueStart(AudioPlaylist playlist) {
+        List<AudioTrack> tracks = getPlaylistAfterSelectedTrack(playlist);
+        log.info("[{}] adding playlist {} to the start of the queue", server.getName(), playlist.getName());
+
+        List<AudioTrack> queueList = new ArrayList<>();
+        queueList.addAll(tracks);
+        queueList.addAll(queue);
+
+        queue.clear();
+        queue.addAll(queueList);
+
+        return tracks;
+    }
+
+    private List<AudioTrack> getPlaylistAfterSelectedTrack(AudioPlaylist playlist) {
+        List<AudioTrack> filtered = new ArrayList<>();
         List<AudioTrack> tracks = playlist.getTracks();
         AudioTrack selectedTrack = playlist.getSelectedTrack();
-        log.info("[{}] adding playlist {} to queue", guildName, playlist.getName());
 
         final int index = selectedTrack != null ? tracks.indexOf(selectedTrack) : 0;
         for (int i = index; i < tracks.size(); i++) {
             AudioTrack track = tracks.get(i);
-            adding.add(track);
-            queue.offer(track);
+            filtered.add(track);
         }
-        if(player.getPlayingTrack() == null)
-            nextTrack();
+        return filtered;
+    }
 
-        return adding;
+    public void clearQueue() {
+        queue.clear();
     }
 
     /**
@@ -109,23 +138,23 @@ public class TrackScheduler extends AudioEventAdapter {
         // Start the next track, regardless of if something is already playing or not. In case queue was empty, we are
         // giving null to startTrack, which is a valid argument and will simply stop the player.
         player.startTrack(track, false);
-        if(track == null)
-            log.info("[{}] reached the end of the queue", guildName);
-        else {
-            log.info("[{}] playing {}", guildName, track.getInfo().title);
+        if(track == null) {
+            log.info("[{}] reached the end of the queue", server.getName());
+            latestEndOfQueue = Instant.now();
+        } else {
+            log.info("[{}] playing {}", server.getName(), track.getInfo().title);
             if(notify)
                 textChannel.sendMessage(TrackUtil.getPLayingEmbed(track));
         }
     }
 
-    public void addToStart(List<AudioTrack> tracks) {
-        tracks.addAll(queue);
-        queue = new LinkedBlockingQueue<>(tracks);
-    }
-
     public boolean toggleLoop() {
         loop = !loop;
         return loop;
+    }
+
+    public Optional<Instant> getLatestEndOfQueue() {
+        return Optional.of(latestEndOfQueue);
     }
 
 }

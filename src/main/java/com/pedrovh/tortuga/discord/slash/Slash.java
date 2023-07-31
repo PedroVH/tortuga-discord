@@ -65,7 +65,11 @@ public enum Slash {
             SlashCommandOption.createStringOption(
                     Slash.OPTION_QUERY,
                     "The track url, playlist url or search query",
-                    true));
+                    true)),
+    COMMAND_STOP(
+            "stop",
+            "Stops the track and clears the queue",
+            Stop.class);
 
     public static final String OPTION_MUSIC = "music";
     public static final String OPTION_NUMBER = "number";
