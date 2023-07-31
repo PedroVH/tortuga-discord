@@ -154,7 +154,7 @@ public class TrackScheduler extends AudioEventAdapter {
     }
 
     public Optional<Instant> getLatestEndOfQueue() {
-        return Optional.of(latestEndOfQueue);
+        return Optional.ofNullable(latestEndOfQueue);
     }
 
 }
