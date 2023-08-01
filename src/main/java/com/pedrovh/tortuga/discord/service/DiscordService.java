@@ -48,7 +48,6 @@ public class DiscordService {
                 .join();
 
         log.info("bot ready!");
-        log.info("update commands: {}", updateCommands);
         log.info("current global slash commands: {}", api.getGlobalSlashCommands().join().stream().map(ApplicationCommand::getName).toList());
 
         updateGlobalSlashCommands();
@@ -65,7 +64,7 @@ public class DiscordService {
             log.info("adding/Updating the following global slash commands: {}", newCommands);
             final Set<SlashCommandBuilder> toAdd = Arrays.stream(Slash.values()).map(Slash::build).collect(Collectors.toSet());
             Set<ApplicationCommand> applicationCommands = api.bulkOverwriteGlobalApplicationCommands(toAdd).join();
-            log.info("all global slash commands: {}", applicationCommands.stream().map(ApplicationCommand::getName).collect(Collectors.toSet()));
+            log.info("updated all global slash commands: {}", applicationCommands.stream().map(ApplicationCommand::getName).collect(Collectors.toSet()));
         }
     }
 
