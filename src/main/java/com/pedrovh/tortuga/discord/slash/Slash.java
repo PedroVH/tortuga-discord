@@ -5,9 +5,11 @@ import com.pedrovh.tortuga.discord.slash.command.channel.Channel;
 import com.pedrovh.tortuga.discord.slash.command.health.Ping;
 import com.pedrovh.tortuga.discord.slash.command.messages.Clear;
 import com.pedrovh.tortuga.discord.slash.command.music.*;
+import org.javacord.api.entity.permission.PermissionType;
 import org.javacord.api.interaction.SlashCommandBuilder;
 import org.javacord.api.interaction.SlashCommandOption;
 
+import java.util.EnumSet;
 import java.util.List;
 
 public enum Slash {
@@ -16,6 +18,7 @@ public enum Slash {
             "channel",
             "A command dedicated to channels",
             Channel.class,
+            EnumSet.of(PermissionType.ADMINISTRATOR),
             SlashCommandOption.createBooleanOption(
                     Slash.OPTION_MUSIC,
                     "Whether this channel should be used for music or not",
@@ -87,12 +90,22 @@ public enum Slash {
     public final String name;
     public final String description;
     public final Class<? extends SlashCommand> handler;
+    public final EnumSet<PermissionType> permissions;
     public final List<SlashCommandOption> options;
 
     Slash(String name, String description, Class<? extends SlashCommand> handler) {
         this.name = name;
         this.description = description;
         this.handler = handler;
+        this.permissions = null;
+        this.options = null;
+    }
+
+    Slash(String name, String description, Class<? extends SlashCommand> handler, EnumSet<PermissionType> permissions) {
+        this.name = name;
+        this.description = description;
+        this.handler = handler;
+        this.permissions = permissions;
         this.options = null;
     }
 
@@ -100,6 +113,15 @@ public enum Slash {
         this.name = name;
         this.description = description;
         this.handler = handler;
+        this.permissions = null;
+        this.options = List.of(options);
+    }
+
+    Slash(String name, String description, Class<? extends SlashCommand> handler, EnumSet<PermissionType> permissions, SlashCommandOption... options) {
+        this.name = name;
+        this.description = description;
+        this.handler = handler;
+        this.permissions = permissions;
         this.options = List.of(options);
     }
 
@@ -107,6 +129,7 @@ public enum Slash {
         return new SlashCommandBuilder()
                 .setName(name)
                 .setDescription(description)
+                .setDefaultEnabledForPermissions(permissions)
                 .setOptions(options);
     }
 
