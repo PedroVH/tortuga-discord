@@ -23,6 +23,8 @@ public class DiscordService {
 
     @Value("${discord.token}")
     private String token;
+    @Value("${commands.updateAll}")
+    private boolean updateCommands;
     private DiscordApi api;
 
     private final MessageListener messageListener;
@@ -46,6 +48,7 @@ public class DiscordService {
                 .join();
 
         log.info("bot ready!");
+        log.info("update commands: {}", updateCommands);
         log.info("current global slash commands: {}", api.getGlobalSlashCommands().join().stream().map(ApplicationCommand::getName).toList());
 
         updateGlobalSlashCommands();
@@ -58,7 +61,7 @@ public class DiscordService {
                 .filter(s -> global.stream().noneMatch(g->g.getName().equalsIgnoreCase(s)))
                 .collect(Collectors.toSet());
 
-        if(!newCommands.isEmpty()) {
+        if(!newCommands.isEmpty() || updateCommands) {
             log.info("adding/Updating the following global slash commands: {}", newCommands);
             final Set<SlashCommandBuilder> toAdd = Arrays.stream(Slash.values()).map(Slash::build).collect(Collectors.toSet());
             Set<ApplicationCommand> applicationCommands = api.bulkOverwriteGlobalApplicationCommands(toAdd).join();

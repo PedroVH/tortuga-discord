@@ -1,6 +1,7 @@
 package com.pedrovh.tortuga.discord.slash.command.music;
 
 import com.pedrovh.tortuga.discord.exception.BotException;
+import com.pedrovh.tortuga.discord.guild.service.GuildPreferencesService;
 import com.pedrovh.tortuga.discord.util.Constants;
 import com.pedrovh.tortuga.discord.music.VoiceConnectionService;
 import jakarta.inject.Singleton;
@@ -11,7 +12,8 @@ public class Leave extends AbstractVoiceSlashCommand {
 
     private final VoiceConnectionService service;
 
-    public Leave(VoiceConnectionService service) {
+    public Leave(GuildPreferencesService preferencesService, VoiceConnectionService service) {
+        super(preferencesService);
         this.service = service;
     }
 

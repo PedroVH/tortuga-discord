@@ -1,6 +1,7 @@
 package com.pedrovh.tortuga.discord.slash.command.music;
 
 import com.pedrovh.tortuga.discord.exception.BotException;
+import com.pedrovh.tortuga.discord.guild.service.GuildPreferencesService;
 import com.pedrovh.tortuga.discord.music.MusicService;
 import com.pedrovh.tortuga.discord.slash.Slash;
 import jakarta.inject.Singleton;
@@ -13,7 +14,8 @@ public class Start extends AbstractVoiceSlashCommand {
 
     private final MusicService service;
 
-    public Start(MusicService service) {
+    public Start(GuildPreferencesService preferencesService, MusicService service) {
+        super(preferencesService);
         this.service = service;
     }
 

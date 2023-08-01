@@ -97,7 +97,7 @@ public enum Slash {
         this.name = name;
         this.description = description;
         this.handler = handler;
-        this.permissions = null;
+        this.permissions = EnumSet.of(PermissionType.SEND_MESSAGES);
         this.options = null;
     }
 
@@ -113,7 +113,7 @@ public enum Slash {
         this.name = name;
         this.description = description;
         this.handler = handler;
-        this.permissions = null;
+        this.permissions = EnumSet.of(PermissionType.SEND_MESSAGES);
         this.options = List.of(options);
     }
 

@@ -23,6 +23,6 @@ public class Constants {
     public final String EMOJI_INFO = "ℹ️";
 
     // messages
-    public final String TITLE_ERROR = EMOJI_ERROR + "Error!";
+    public final String TITLE_ERROR = EMOJI_ERROR + " Error!";
 
 }

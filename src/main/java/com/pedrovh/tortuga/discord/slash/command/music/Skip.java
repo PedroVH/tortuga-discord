@@ -1,6 +1,7 @@
 package com.pedrovh.tortuga.discord.slash.command.music;
 
 import com.pedrovh.tortuga.discord.exception.BotException;
+import com.pedrovh.tortuga.discord.guild.service.GuildPreferencesService;
 import com.pedrovh.tortuga.discord.music.MusicService;
 import jakarta.inject.Singleton;
 
@@ -9,7 +10,8 @@ public class Skip extends AbstractVoiceSlashCommand {
 
     private final MusicService service;
 
-    public Skip(MusicService service) {
+    public Skip(GuildPreferencesService preferencesService, MusicService service) {
+        super(preferencesService);
         this.service = service;
     }
 
