@@ -10,7 +10,6 @@ import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
 import org.javacord.api.interaction.SlashCommandInteractionOption;
-import org.javacord.api.interaction.callback.InteractionImmediateResponseBuilder;
 
 @Slf4j
 @Singleton
@@ -25,11 +24,7 @@ public class Channel extends AbstractSlashCommand {
 
     @Override
     protected void handle() throws BotException {
-        InteractionImmediateResponseBuilder responder = interaction.createImmediateResponder();
-
         interaction.getOptionByName(Slash.OPTION_MUSIC).ifPresent(this::optionMusic);
-
-        responder.respond();
     }
 
     protected void optionMusic(SlashCommandInteractionOption option) {
@@ -49,7 +44,8 @@ public class Channel extends AbstractSlashCommand {
                                 "%s Music channel changed to %s!",
                                 Constants.EMOJI_SUCCESS,
                                 musicChannelId == null ? "none" : serverTextChannel))
-                        .setColor(Constants.GREEN));
+                        .setColor(Constants.GREEN))
+                .respond();
     }
 
 }
