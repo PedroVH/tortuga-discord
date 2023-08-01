@@ -4,7 +4,7 @@ import com.pedrovh.tortuga.discord.slash.command.Help;
 import com.pedrovh.tortuga.discord.slash.command.channel.Channel;
 import com.pedrovh.tortuga.discord.slash.command.health.Ping;
 import com.pedrovh.tortuga.discord.slash.command.messages.Clear;
-import com.pedrovh.tortuga.discord.slash.command.voice.*;
+import com.pedrovh.tortuga.discord.slash.command.music.*;
 import org.javacord.api.interaction.SlashCommandBuilder;
 import org.javacord.api.interaction.SlashCommandOption;
 
@@ -42,6 +42,15 @@ public enum Slash {
             "help",
             "Helpful message about how to use me",
             Help.class),
+    COMMAND_NEXT(
+            "next",
+            "Adds a song or playlist as next in the queue",
+            Next.class,
+            SlashCommandOption.createStringOption(
+                    Slash.OPTION_QUERY,
+                    "The track url, playlist url or search query",
+                    true)
+    ),
     COMMAND_PAUSE(
             "pause",
             "Pauses/Unpauses current track",

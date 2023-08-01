@@ -1,6 +1,5 @@
-package com.pedrovh.tortuga.discord.voice;
+package com.pedrovh.tortuga.discord.music;
 
-import com.pedrovh.tortuga.discord.voice.music.GuildAudioManager;
 import com.sedmelluq.discord.lavaplayer.player.AudioConfiguration;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;

@@ -1,7 +1,7 @@
-package com.pedrovh.tortuga.discord.voice.music;
+package com.pedrovh.tortuga.discord.music;
 
 import com.pedrovh.tortuga.discord.util.Constants;
-import com.pedrovh.tortuga.discord.util.TrackUtil;
+import com.pedrovh.tortuga.discord.util.AudioTrackUtils;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
@@ -15,6 +15,7 @@ import org.javacord.api.entity.server.Server;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.BlockingQueue;
@@ -73,15 +74,19 @@ public class TrackScheduler extends AudioEventAdapter {
                             .setTitle(String.format(
                                     "%s [%s] Playing %s",
                                     Constants.EMOJI_SONG,
-                                    TrackUtil.formatTrackDuration(track.getDuration()),
+                                    AudioTrackUtils.formatTrackDuration(track.getDuration()),
                                     track.getInfo().title))
                             .setFooter(track.getInfo().author)
                             .setColor(Constants.GREEN));
         }
     }
 
+    public void clearQueue() {
+        queue.clear();
+    }
+
     public List<AudioTrack> queuePlaylist(AudioPlaylist playlist) {
-        List<AudioTrack> tracks = getPlaylistAfterSelectedTrack(playlist);
+        List<AudioTrack> tracks = AudioTrackUtils.getTracksAfterSelectedTrack(playlist);
 
         log.info("[{}] adding playlist {} to queue", server.getName(), playlist.getName());
         tracks.forEach(queue::offer);
@@ -92,35 +97,13 @@ public class TrackScheduler extends AudioEventAdapter {
         return tracks;
     }
 
-    public List<AudioTrack> addPlaylistToQueueStart(AudioPlaylist playlist) {
-        List<AudioTrack> tracks = getPlaylistAfterSelectedTrack(playlist);
-        log.info("[{}] adding playlist {} to the start of the queue", server.getName(), playlist.getName());
-
+    public void addAsNextInQueue(AudioTrack... tracks) {
         List<AudioTrack> queueList = new ArrayList<>();
-        queueList.addAll(tracks);
+        queueList.addAll(Arrays.stream(tracks).toList());
         queueList.addAll(queue);
 
         queue.clear();
         queue.addAll(queueList);
-
-        return tracks;
-    }
-
-    private List<AudioTrack> getPlaylistAfterSelectedTrack(AudioPlaylist playlist) {
-        List<AudioTrack> filtered = new ArrayList<>();
-        List<AudioTrack> tracks = playlist.getTracks();
-        AudioTrack selectedTrack = playlist.getSelectedTrack();
-
-        final int index = selectedTrack != null ? tracks.indexOf(selectedTrack) : 0;
-        for (int i = index; i < tracks.size(); i++) {
-            AudioTrack track = tracks.get(i);
-            filtered.add(track);
-        }
-        return filtered;
-    }
-
-    public void clearQueue() {
-        queue.clear();
     }
 
     /**
@@ -144,7 +127,7 @@ public class TrackScheduler extends AudioEventAdapter {
         } else {
             log.info("[{}] playing {}", server.getName(), track.getInfo().title);
             if(notify)
-                textChannel.sendMessage(TrackUtil.getPLayingEmbed(track));
+                textChannel.sendMessage(AudioTrackUtils.getPLayingEmbed(track));
         }
     }
 

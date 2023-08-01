@@ -2,7 +2,7 @@ package com.pedrovh.tortuga.discord.listener;
 
 import com.pedrovh.tortuga.discord.guild.model.GuildPreferences;
 import com.pedrovh.tortuga.discord.guild.service.GuildPreferencesService;
-import com.pedrovh.tortuga.discord.voice.music.MusicService;
+import com.pedrovh.tortuga.discord.music.MusicService;
 import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
 import org.javacord.api.entity.channel.ServerTextChannel;

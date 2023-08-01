@@ -1,8 +1,7 @@
-package com.pedrovh.tortuga.discord.voice.music;
+package com.pedrovh.tortuga.discord.music;
 
 import com.pedrovh.tortuga.discord.util.Constants;
-import com.pedrovh.tortuga.discord.util.TrackUtil;
-import com.pedrovh.tortuga.discord.voice.VoiceConnectionService;
+import com.pedrovh.tortuga.discord.util.AudioTrackUtils;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
@@ -60,7 +59,7 @@ public class MusicService {
         }
     }
 
-    public void next(final DiscordApi api, final ServerVoiceChannel voiceChannel, InteractionImmediateResponseBuilder response) {
+    public void skip(final DiscordApi api, final ServerVoiceChannel voiceChannel, InteractionImmediateResponseBuilder response) {
         GuildAudioManager manager = connectionService.getGuildAudioManager(api, voiceChannel);
         manager.getScheduler().nextTrack();
         response
@@ -163,7 +162,7 @@ public class MusicService {
                 totalTimeMs += track.getDuration();
             }
 
-            String totalTime = TrackUtil.formatTrackDuration(totalTimeMs);
+            String totalTime = AudioTrackUtils.formatTrackDuration(totalTimeMs);
 
             response.addEmbed(
                             new EmbedBuilder()
@@ -213,6 +212,17 @@ public class MusicService {
                         manager,
                         identifier,
                         new StartCommandAudioLoadResultHandler(manager, connectionService, channel, identifier, responder));
+    }
+
+    public void next(final DiscordApi api, final ServerVoiceChannel channel, final String query, InteractionImmediateResponseBuilder responder) {
+        final GuildAudioManager manager = connectionService.getGuildAudioManager(api, channel);
+        final String identifier = getIdentifier(query);
+
+        connectionService.getPlayerManager()
+                .loadItemOrdered(
+                        manager,
+                        identifier,
+                        new NextCommandAudioLoadResultHandler(manager, connectionService, channel, identifier, responder));
     }
 
 }

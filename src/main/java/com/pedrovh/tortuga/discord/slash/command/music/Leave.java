@@ -1,8 +1,8 @@
-package com.pedrovh.tortuga.discord.slash.command.voice;
+package com.pedrovh.tortuga.discord.slash.command.music;
 
 import com.pedrovh.tortuga.discord.exception.BotException;
 import com.pedrovh.tortuga.discord.util.Constants;
-import com.pedrovh.tortuga.discord.voice.VoiceConnectionService;
+import com.pedrovh.tortuga.discord.music.VoiceConnectionService;
 import jakarta.inject.Singleton;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
 

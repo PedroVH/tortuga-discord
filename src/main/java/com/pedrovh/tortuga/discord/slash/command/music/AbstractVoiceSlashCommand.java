@@ -1,4 +1,4 @@
-package com.pedrovh.tortuga.discord.slash.command.voice;
+package com.pedrovh.tortuga.discord.slash.command.music;
 
 import com.pedrovh.tortuga.discord.exception.BotException;
 import com.pedrovh.tortuga.discord.exception.ServerVCRequiredException;

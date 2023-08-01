@@ -1,7 +1,7 @@
-package com.pedrovh.tortuga.discord.slash.command.voice;
+package com.pedrovh.tortuga.discord.slash.command.music;
 
 import com.pedrovh.tortuga.discord.exception.BotException;
-import com.pedrovh.tortuga.discord.voice.music.MusicService;
+import com.pedrovh.tortuga.discord.music.MusicService;
 import jakarta.inject.Singleton;
 
 @Singleton
@@ -15,6 +15,6 @@ public class Skip extends AbstractVoiceSlashCommand {
 
     @Override
     protected void handle() throws BotException {
-        service.next(event.getApi(), voiceChannel, response);
+        service.skip(event.getApi(), voiceChannel, response);
     }
 }

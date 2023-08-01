@@ -1,15 +1,18 @@
 package com.pedrovh.tortuga.discord.util;
 
+import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
 
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 @UtilityClass
-public class TrackUtil {
+public class AudioTrackUtils {
 
     public String formatTrackDuration(Long millis) {
         Duration duration = Duration.ofMillis(millis);
@@ -30,6 +33,19 @@ public class TrackUtil {
                         track.getInfo().title))
                 .setFooter(track.getInfo().author)
                 .setColor(Constants.GREEN);
+    }
+
+    public static List<AudioTrack> getTracksAfterSelectedTrack(AudioPlaylist playlist) {
+        List<AudioTrack> filtered = new ArrayList<>();
+        List<AudioTrack> tracks = playlist.getTracks();
+        AudioTrack selectedTrack = playlist.getSelectedTrack();
+
+        final int index = selectedTrack != null ? tracks.indexOf(selectedTrack) : 0;
+        for (int i = index; i < tracks.size(); i++) {
+            AudioTrack track = tracks.get(i);
+            filtered.add(track);
+        }
+        return filtered;
     }
 
 }

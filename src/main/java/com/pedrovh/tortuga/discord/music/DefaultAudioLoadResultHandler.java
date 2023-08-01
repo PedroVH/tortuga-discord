@@ -1,7 +1,6 @@
-package com.pedrovh.tortuga.discord.voice.music;
+package com.pedrovh.tortuga.discord.music;
 
 import com.pedrovh.tortuga.discord.util.Constants;
-import com.pedrovh.tortuga.discord.voice.VoiceConnectionService;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import lombok.extern.slf4j.Slf4j;

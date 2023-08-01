@@ -1,4 +1,4 @@
-package com.pedrovh.tortuga.discord.voice.music;
+package com.pedrovh.tortuga.discord.music;
 
 import com.pedrovh.tortuga.discord.guild.service.GuildPreferencesService;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
