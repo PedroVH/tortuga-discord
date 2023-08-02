@@ -19,6 +19,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Queue;
@@ -62,9 +63,28 @@ public class MusicService {
     public void skip(final DiscordApi api, final ServerVoiceChannel voiceChannel, InteractionImmediateResponseBuilder response) {
         GuildAudioManager manager = connectionService.getGuildAudioManager(api, voiceChannel);
         manager.getScheduler().nextTrack();
+
         response
                 .addEmbed(new EmbedBuilder()
                         .setTitle(String.format("%s Skipped", Constants.EMOJI_SUCCESS))
+                        .setColor(Constants.GREEN))
+                .respond();
+    }
+
+    public void remove(DiscordApi api, ServerVoiceChannel voiceChannel, InteractionImmediateResponseBuilder response, int start, int end) {
+        GuildAudioManager manager = connectionService.getGuildAudioManager(api, voiceChannel);
+        List<AudioTrack> removed = manager.getScheduler().removeFromQueue(start, end);
+
+        StringBuilder sb = new StringBuilder();
+        int index = start + 1;
+        for (AudioTrack track : removed) {
+            sb.append(index++).append(". ").append(track.getInfo().title).append("\n");
+        }
+
+        response
+                .addEmbed(new EmbedBuilder()
+                        .setTitle(String.format("%s Removed", Constants.EMOJI_SUCCESS))
+                        .setDescription(sb.toString())
                         .setColor(Constants.GREEN))
                 .respond();
     }
@@ -127,7 +147,7 @@ public class MusicService {
         GuildAudioManager manager = connectionService.getGuildAudioManager(api, voiceChannel);
         boolean loop = manager.getScheduler().toggleLoop();
         String enabled = loop?"enabled":"disabled";
-        log.info("[{}] looping {} for this server", voiceChannel.getServer().getName(), enabled);
+        log.info("[{}] looping {}", voiceChannel.getServer().getName(), enabled);
         response.addEmbed(
                 new EmbedBuilder()
                         .setTitle(String.format("%s Looping %s!", Constants.EMOJI_SUCCESS, enabled))
@@ -152,11 +172,11 @@ public class MusicService {
                         .respond();
                 return;
             }
-            sb.append("1. ").append(currentTrack.getInfo().title).append("\n");
+            sb.append(Constants.EMOJI_SONG).append(" ").append(currentTrack.getInfo().title).append("\n");
 
             long totalTimeMs = currentTrack.getDuration() - currentTrack.getPosition();
 
-            int count = 2;
+            int count = 1;
             for(AudioTrack track : queue) {
                 sb.append(count++).append(". ").append(track.getInfo().title).append("\n");
                 totalTimeMs += track.getDuration();
@@ -223,6 +243,12 @@ public class MusicService {
                         manager,
                         identifier,
                         new NextCommandAudioLoadResultHandler(manager, connectionService, channel, identifier, responder));
+    }
+
+    public boolean isQueueEmpty(Server server) {
+        return connectionService.getGuildAudioManager(server.getIdAsString())
+                .filter(manager -> manager.getPlayer().getPlayingTrack() != null && manager.getScheduler().getQueue().isEmpty())
+                .isPresent();
     }
 
 }

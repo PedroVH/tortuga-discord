@@ -2,10 +2,13 @@ package com.pedrovh.tortuga.discord.listener;
 
 import com.pedrovh.tortuga.discord.exception.BotException;
 import com.pedrovh.tortuga.discord.slash.Slash;
+import com.pedrovh.tortuga.discord.util.Constants;
 import io.micronaut.context.ApplicationContext;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
+import org.javacord.api.entity.message.MessageFlag;
+import org.javacord.api.entity.message.embed.EmbedBuilder;
 import org.javacord.api.event.interaction.SlashCommandCreateEvent;
 import org.javacord.api.interaction.SlashCommandInteraction;
 import org.javacord.api.listener.interaction.SlashCommandCreateListener;
@@ -40,6 +43,14 @@ public class SlashListener implements SlashCommandCreateListener {
 
         } catch (BotException e) {
             e.respond(interaction.createImmediateResponder());
+        } catch (Exception e) {
+            interaction.createImmediateResponder()
+                    .addEmbed(new EmbedBuilder()
+                            .setTitle(Constants.TITLE_ERROR)
+                            .setDescription(e.getMessage())
+                            .setColor(Constants.RED))
+                    .setFlags(MessageFlag.EPHEMERAL)
+                    .respond();
         }
     }
 

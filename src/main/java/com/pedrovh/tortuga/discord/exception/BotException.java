@@ -34,7 +34,7 @@ public abstract class BotException extends Exception {
     }
 
     protected MessageFlag[] getMessageFlags() {
-        return new MessageFlag[0];
+        return new MessageFlag[] {MessageFlag.EPHEMERAL};
     }
 
 }

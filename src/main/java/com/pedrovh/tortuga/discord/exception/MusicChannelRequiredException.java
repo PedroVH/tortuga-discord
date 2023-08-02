@@ -23,8 +23,4 @@ public class MusicChannelRequiredException extends BotException {
                 .setColor(Constants.RED);
     }
 
-    @Override
-    protected MessageFlag[] getMessageFlags() {
-        return new MessageFlag[] {MessageFlag.EPHEMERAL};
-    }
 }

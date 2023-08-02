@@ -61,7 +61,7 @@ public class DiscordService {
                 .collect(Collectors.toSet());
 
         if(!newCommands.isEmpty() || updateCommands) {
-            log.info("adding/Updating the following global slash commands: {}", newCommands);
+            log.info("adding the following global slash commands: {}", newCommands);
             final Set<SlashCommandBuilder> toAdd = Arrays.stream(Slash.values()).map(Slash::build).collect(Collectors.toSet());
             Set<ApplicationCommand> applicationCommands = api.bulkOverwriteGlobalApplicationCommands(toAdd).join();
             log.info("updated all global slash commands: {}", applicationCommands.stream().map(ApplicationCommand::getName).collect(Collectors.toSet()));

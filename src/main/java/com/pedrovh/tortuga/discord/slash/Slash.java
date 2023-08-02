@@ -66,6 +66,22 @@ public enum Slash {
             "queue",
             "Lists current tracks in queue",
             Queue.class),
+    COMMAND_REMOVE(
+            "remove",
+            "Removes tracks from the queue",
+            Remove.class,
+            SlashCommandOption.createLongOption(
+                    Slash.OPTION_END,
+                    "The end track position to delete until (inclusive)",
+                    true,
+                    1L,
+                    500L),
+            SlashCommandOption.createLongOption(
+                    Slash.OPTION_START,
+                    "The start track position to start deleting from (inclusive)",
+                    false,
+                    1L,
+                    499L)),
     COMMAND_SKIP(
             "skip",
             "Skip current track",
@@ -86,6 +102,8 @@ public enum Slash {
     public static final String OPTION_MUSIC = "music";
     public static final String OPTION_NUMBER = "number";
     public static final String OPTION_QUERY = "query";
+    public static final String OPTION_START = "start";
+    public static final String OPTION_END = "end";
 
     public final String name;
     public final String description;

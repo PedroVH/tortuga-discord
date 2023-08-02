@@ -11,6 +11,8 @@ import com.sedmelluq.discord.lavaplayer.source.soundcloud.SoundCloudAudioSourceM
 import com.sedmelluq.discord.lavaplayer.source.twitch.TwitchStreamAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.vimeo.VimeoAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager;
+import io.micronaut.context.annotation.Value;
+import io.micronaut.core.util.StringUtils;
 import jakarta.inject.Singleton;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +30,11 @@ import java.util.concurrent.ConcurrentHashMap;
 @Singleton
 public class VoiceConnectionService {
 
+    @Value("${google.username:}")
+    private String username;
+    @Value("${google.password:}")
+    private String password;
+
     private AudioPlayerManager playerManager;
     private final ConcurrentHashMap<String, GuildAudioManager> audioManagers = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, AudioConnection> connections = new ConcurrentHashMap<>();
@@ -38,7 +45,11 @@ public class VoiceConnectionService {
 
         playerManager.getConfiguration().setResamplingQuality(AudioConfiguration.ResamplingQuality.HIGH);
 
-        playerManager.registerSourceManager(new YoutubeAudioSourceManager());
+
+        if(StringUtils.isEmpty(username))
+            playerManager.registerSourceManager(new YoutubeAudioSourceManager());
+        else
+            playerManager.registerSourceManager(new YoutubeAudioSourceManager(true, username, password));
         playerManager.registerSourceManager(SoundCloudAudioSourceManager.createDefault());
         playerManager.registerSourceManager(new BandcampAudioSourceManager());
         playerManager.registerSourceManager(new VimeoAudioSourceManager());

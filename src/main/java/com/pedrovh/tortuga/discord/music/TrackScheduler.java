@@ -69,6 +69,7 @@ public class TrackScheduler extends AudioEventAdapter {
                                     .setColor(Constants.GREEN));
         } else {
             log.info("[{}] playing {}", server.getName(), track.getInfo().title);
+            latestEndOfQueue = null;
             textChannel.sendMessage(
                     new EmbedBuilder()
                             .setTitle(String.format(
@@ -79,6 +80,16 @@ public class TrackScheduler extends AudioEventAdapter {
                             .setFooter(track.getInfo().author)
                             .setColor(Constants.GREEN));
         }
+    }
+
+    public List<AudioTrack> removeFromQueue(final int initPos, final int endPos) throws IndexOutOfBoundsException {
+        log.info("[{}] removing {} to {} from queue", server.getName(), initPos, endPos);
+
+        List<AudioTrack> queueList = new ArrayList<>(queue);
+        List<AudioTrack> removed = new ArrayList<>(queueList.subList(initPos, endPos));
+
+        queue.removeAll(removed);
+        return removed;
     }
 
     public void clearQueue() {
@@ -126,6 +137,7 @@ public class TrackScheduler extends AudioEventAdapter {
             latestEndOfQueue = Instant.now();
         } else {
             log.info("[{}] playing {}", server.getName(), track.getInfo().title);
+            latestEndOfQueue = null;
             if(notify)
                 textChannel.sendMessage(AudioTrackUtils.getPLayingEmbed(track));
         }
