@@ -247,7 +247,7 @@ public class MusicService {
 
     public boolean isQueueEmpty(Server server) {
         return connectionService.getGuildAudioManager(server.getIdAsString())
-                .filter(manager -> manager.getPlayer().getPlayingTrack() != null && manager.getScheduler().getQueue().isEmpty())
+                .filter(manager -> manager.getPlayer().getPlayingTrack() == null && manager.getScheduler().getQueue().isEmpty())
                 .isPresent();
     }
 
