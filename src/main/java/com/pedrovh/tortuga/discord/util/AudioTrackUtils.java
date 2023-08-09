@@ -35,6 +35,13 @@ public class AudioTrackUtils {
                 .setColor(Constants.GREEN);
     }
 
+    public EmbedBuilder getAddedToPlaylistEmbed(AudioTrack track) {
+        return new EmbedBuilder()
+                .setTitle(String.format("%s %s added to the queue", Constants.EMOJI_SONG, track.getInfo().title))
+                .setDescription(track.getInfo().author)
+                .setColor(Constants.GREEN);
+    }
+
     public static List<AudioTrack> getTracksAfterSelectedTrack(AudioPlaylist playlist) {
         List<AudioTrack> filtered = new ArrayList<>();
         List<AudioTrack> tracks = playlist.getTracks();

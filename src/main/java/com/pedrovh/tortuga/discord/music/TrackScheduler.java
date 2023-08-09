@@ -1,6 +1,5 @@
 package com.pedrovh.tortuga.discord.music;
 
-import com.pedrovh.tortuga.discord.util.Constants;
 import com.pedrovh.tortuga.discord.util.AudioTrackUtils;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
@@ -10,7 +9,6 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.javacord.api.entity.channel.TextChannel;
-import org.javacord.api.entity.message.embed.EmbedBuilder;
 import org.javacord.api.entity.server.Server;
 
 import java.time.Instant;
@@ -62,23 +60,11 @@ public class TrackScheduler extends AudioEventAdapter {
         // track goes to the queue instead.
         if (!player.startTrack(track, true)) {
             log.info("[{}] adding {} to queue: {}", server.getName(), track.getInfo().title, queue.offer(track));
-            textChannel.sendMessage(
-                            new EmbedBuilder()
-                                    .setTitle(String.format("%s %s added to the queue", Constants.EMOJI_SONG, track.getInfo().title))
-                                    .setDescription(track.getInfo().author)
-                                    .setColor(Constants.GREEN));
+            textChannel.sendMessage(AudioTrackUtils.getAddedToPlaylistEmbed(track));
         } else {
-            log.info("[{}] playing {}", server.getName(), track.getInfo().title);
             latestEndOfQueue = null;
-            textChannel.sendMessage(
-                    new EmbedBuilder()
-                            .setTitle(String.format(
-                                    "%s [%s] Playing %s",
-                                    Constants.EMOJI_SONG,
-                                    AudioTrackUtils.formatTrackDuration(track.getDuration()),
-                                    track.getInfo().title))
-                            .setFooter(track.getInfo().author)
-                            .setColor(Constants.GREEN));
+            log.info("[{}] playing {}", server.getName(), track.getInfo().title);
+            textChannel.sendMessage(AudioTrackUtils.getPLayingEmbed(track));
         }
     }
 

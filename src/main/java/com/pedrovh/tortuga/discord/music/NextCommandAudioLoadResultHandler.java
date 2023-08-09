@@ -29,7 +29,11 @@ public class NextCommandAudioLoadResultHandler extends AbstractAudioLoadResultHa
     protected void handleTrackLoaded(AudioTrack track) {
         manager.getScheduler().addAsNextInQueue(track);
 
-        responder.addEmbed(AudioTrackUtils.getPLayingEmbed(track))
+        if(manager.getPlayer().getPlayingTrack() != null)
+            responder.addEmbed(AudioTrackUtils.getAddedToPlaylistEmbed(track))
+                    .respond();
+        else
+            responder.addEmbed(AudioTrackUtils.getPLayingEmbed(track))
                 .respond();
     }
 
