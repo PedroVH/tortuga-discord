@@ -1,5 +1,6 @@
 package com.pedrovh.tortuga.discord.service;
 
+import com.pedrovh.tortuga.discord.listener.MessageComponentListener;
 import com.pedrovh.tortuga.discord.listener.MessageListener;
 import com.pedrovh.tortuga.discord.listener.SlashListener;
 import com.pedrovh.tortuga.discord.command.slash.Slash;
@@ -29,10 +30,12 @@ public class DiscordService {
 
     private final MessageListener messageListener;
     private final SlashListener slashListener;
+    private final MessageComponentListener messageComponentListener;
 
-    public DiscordService(MessageListener messageListener, SlashListener slashListener) {
+    public DiscordService(MessageListener messageListener, SlashListener slashListener, MessageComponentListener messageComponentListener) {
         this.messageListener = messageListener;
         this.slashListener = slashListener;
+        this.messageComponentListener = messageComponentListener;
     }
 
     @PostConstruct
@@ -44,6 +47,7 @@ public class DiscordService {
                 .setAllIntents()
                 .addListener(messageListener)
                 .addListener(slashListener)
+                .addListener(messageComponentListener)
                 .login()
                 .join();
 

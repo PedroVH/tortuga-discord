@@ -26,4 +26,8 @@ public class Constants {
     // messages
     public final String TITLE_ERROR = EMOJI_ERROR + " Error!";
 
+    // events
+    public final String EVENT_PLAYLIST_REPLACE = "playlist-replace-";
+    public final String EVENT_CANCEL = "button-cancel";
+
 }

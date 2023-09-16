@@ -55,16 +55,22 @@ public class TrackScheduler extends AudioEventAdapter {
      * @param track  The track to play or add to queue.
      */
     public void queue(AudioTrack track) {
+        queue(track, true);
+    }
+
+    public void queue(AudioTrack track, boolean notify) {
         // Calling startTrack with the noInterrupt set to true will start the track only if nothing is currently playing. If
         // something is playing, it returns false and does nothing. In that case the player was already playing so this
         // track goes to the queue instead.
         if (!player.startTrack(track, true)) {
             log.info("[{}] adding {} to queue: {}", server.getName(), track.getInfo().title, queue.offer(track));
-            textChannel.sendMessage(AudioTrackUtils.getAddedToPlaylistEmbed(track));
+            if(notify)
+                textChannel.sendMessage(AudioTrackUtils.getAddedToPlaylistEmbed(track));
         } else {
             latestEndOfQueue = null;
             log.info("[{}] playing {}", server.getName(), track.getInfo().title);
-            textChannel.sendMessage(AudioTrackUtils.getPLayingEmbed(track));
+            if(notify)
+                textChannel.sendMessage(AudioTrackUtils.getPLayingEmbed(track));
         }
     }
 

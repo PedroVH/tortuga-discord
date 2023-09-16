@@ -57,10 +57,12 @@ public class VoiceConnectionService {
         String id = voiceChannel.getServer().getIdAsString();
 
         GuildAudioManager manager = audioManagers.remove(id);
-        manager.getPlayer().destroy();
+        if(manager != null)
+            manager.getPlayer().destroy();
         connections.remove(id);
 
-        voiceChannel.disconnect().join();
+        if(voiceChannel.isConnected(voiceChannel.getApi().getYourself()))
+            voiceChannel.disconnect().join();
     }
 
     public void createAudioConnection(ServerVoiceChannel channel, AudioSource source) {

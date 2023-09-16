@@ -23,7 +23,6 @@ public class Playlist extends AbstractVoiceSlashCommand {
 
     @Override
     protected void handle() throws BotException {
-        log.info("used options: " + interaction.getOptions().stream().map(SlashCommandInteractionOption::getName).toList());
         interaction.getOptionByName(Slash.OPTION_SAVE).ifPresent(this::optionSave);
         interaction.getOptionByName(Slash.OPTION_LOAD).ifPresent(this::optionLoad);
         interaction.getOptionByName(Slash.OPTION_LIST).ifPresent(this::optionList);
@@ -31,7 +30,7 @@ public class Playlist extends AbstractVoiceSlashCommand {
 
     private void optionSave(SlashCommandInteractionOption option) {
         String value = option.getOptions().get(0).getStringValue().orElseThrow();
-        service.save(server, value, response);
+        service.save(server, value, response, false);
     }
 
     private void optionLoad(SlashCommandInteractionOption option) {

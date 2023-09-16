@@ -15,6 +15,9 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
 import org.javacord.api.entity.channel.ServerVoiceChannel;
+import org.javacord.api.entity.message.component.ActionRowBuilder;
+import org.javacord.api.entity.message.component.ButtonBuilder;
+import org.javacord.api.entity.message.component.ButtonStyle;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
 import org.javacord.api.entity.server.Server;
 import org.javacord.api.interaction.callback.InteractionImmediateResponseBuilder;
@@ -36,7 +39,7 @@ public class PlaylistService {
         this.musicService = musicService;
     }
 
-    public void save(Server server, String name, final InteractionImmediateResponseBuilder response) {
+    public void save(Server server, String name, final InteractionImmediateResponseBuilder response, boolean replace) {
         GuildPlaylists guildPlaylists = get(server).orElse(null);
         if(guildPlaylists == null) {
             log.info("[{}] creating new guildPlaylists in database", server.getName());
@@ -45,6 +48,29 @@ public class PlaylistService {
             guildPlaylists.setPlaylists(new ArrayList<>());
             dao.insert(guildPlaylists);
         }
+        // if already exists, asks if you want to replace it
+        if(!replace && get(server, name).isPresent()) {
+            response.addEmbed(new EmbedBuilder()
+                            .setTitle(String.format("%s There's already a saved playlist called %s. Do you wish to replace it?", Constants.EMOJI_INFO, name)))
+                    .addComponents(
+                            new ActionRowBuilder().addComponents(
+                                new ButtonBuilder()
+                                        .setCustomId(Constants.EVENT_PLAYLIST_REPLACE + name)
+                                        .setLabel("Yes!")
+                                        .setStyle(ButtonStyle.SUCCESS)
+                                        .setEmoji(Constants.EMOJI_SUCCESS)
+                                        .build(),
+                                new ButtonBuilder()
+                                        .setCustomId(Constants.EVENT_CANCEL)
+                                        .setLabel("No!")
+                                        .setStyle(ButtonStyle.DANGER)
+                                        .setEmoji(Constants.EMOJI_ERROR)
+                                        .build())
+                                    .build())
+                    .respond();
+            return;
+        }
+
         Optional<GuildAudioManager> audioManager = connectionService.getGuildAudioManager(server.getIdAsString());
         if(audioManager.isPresent()) {
             GuildAudioManager manager = audioManager.get();
@@ -89,7 +115,7 @@ public class PlaylistService {
                             new AbstractCommandAudioLoadResultHandler(manager, connectionService, channel, url, response) {
                                 @Override
                                 protected void handleTrackLoaded(AudioTrack track) {
-                                    manager.getScheduler().queue(track);
+                                    manager.getScheduler().queue(track, false);
                                 }
                                 @Override
                                 protected void handlePlaylistLoaded(AudioPlaylist playlist) {
