@@ -21,6 +21,7 @@ public class Constants {
     public final String EMOJI_PONG = "🏓";
     public final String EMOJI_SONG = "🎶";
     public final String EMOJI_INFO = "ℹ️";
+    public final String EMOJI_LIVE = "🔴";
 
     // messages
     public final String TITLE_ERROR = EMOJI_ERROR + " Error!";

@@ -1,7 +1,7 @@
 package com.pedrovh.tortuga.discord.listener;
 
 import com.pedrovh.tortuga.discord.exception.BotException;
-import com.pedrovh.tortuga.discord.slash.Slash;
+import com.pedrovh.tortuga.discord.command.slash.Slash;
 import com.pedrovh.tortuga.discord.util.Constants;
 import io.micronaut.context.ApplicationContext;
 import jakarta.inject.Inject;

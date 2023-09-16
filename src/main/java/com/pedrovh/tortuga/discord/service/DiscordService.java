@@ -2,7 +2,7 @@ package com.pedrovh.tortuga.discord.service;
 
 import com.pedrovh.tortuga.discord.listener.MessageListener;
 import com.pedrovh.tortuga.discord.listener.SlashListener;
-import com.pedrovh.tortuga.discord.slash.Slash;
+import com.pedrovh.tortuga.discord.command.slash.Slash;
 import io.micronaut.context.annotation.Context;
 import io.micronaut.context.annotation.Value;
 import lombok.extern.slf4j.Slf4j;

@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.pedrovh</groupId>
     <artifactId>tortuga-discord</artifactId>
-    <version>0.2</version>
+    <version>1.0</version>
     <packaging>${packaging}</packaging>
 
     <parent>
@@ -25,16 +25,6 @@
     </properties>
 
     <repositories>
-        <repository>
-            <id>sonatype-snapshots</id>
-            <url>https://s01.oss.sonatype.org/content/repositories/snapshots/</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-        </repository>
         <repository>
             <id>central</id>
             <url>https://repo.maven.apache.org/maven2</url>
@@ -68,11 +58,6 @@
             <version>3.8.0</version>
             <type>pom</type>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>com.github.walkyst</groupId>-->
-<!--            <artifactId>lavaplayer-fork</artifactId>-->
-<!--            <version>1.4.2</version>-->
-<!--        </dependency>-->
         <dependency>
             <groupId>dev.arbjerg</groupId>
             <artifactId>lavaplayer</artifactId>

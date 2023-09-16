@@ -25,11 +25,12 @@ public class AudioTrackUtils {
     }
 
     public EmbedBuilder getPLayingEmbed(AudioTrack track) {
+        String duration = track.getInfo().isStream ? Constants.EMOJI_LIVE + "Live" : formatTrackDuration(track.getDuration());
         return new EmbedBuilder()
                 .setTitle(String.format(
                         "%s [%s] Playing %s",
                         Constants.EMOJI_SONG,
-                        formatTrackDuration(track.getDuration()),
+                        duration,
                         track.getInfo().title))
                 .setFooter(track.getInfo().author)
                 .setColor(Constants.GREEN);

@@ -1,6 +1,6 @@
 package com.pedrovh.tortuga.discord.scheduler;
 
-import com.pedrovh.tortuga.discord.music.VoiceConnectionService;
+import com.pedrovh.tortuga.discord.music.service.VoiceConnectionService;
 import com.pedrovh.tortuga.discord.music.GuildAudioManager;
 import io.micronaut.context.annotation.Value;
 import io.micronaut.scheduling.annotation.Scheduled;
