@@ -27,7 +27,7 @@ public class Replace extends AbstractVoiceSlashCommand {
         long pos = interaction.getOptionByName(Slash.OPTION_TRACK).flatMap(SlashCommandInteractionOption::getLongValue).orElseThrow() - 1;
         String q = interaction.getOptionByName(Slash.OPTION_QUERY).flatMap(SlashCommandInteractionOption::getStringValue).orElseThrow();
 
-        if(pos < 0) {
+        if(pos < -1) {
             throw new BotException() {
                 @Override
                 public EmbedBuilder getEmbed() {

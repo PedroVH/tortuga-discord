@@ -28,7 +28,7 @@ public class ReplaceCommandAudioLoadResultHandler extends NextCommandAudioLoadRe
 
     @Override
     protected void handleTrackLoaded(AudioTrack track) {
-        if(position == 0) {
+        if(position == -1) {
             manager.getScheduler().nextTrack(track, false);
             responder.addEmbed(ResponseUtils.getPLayingEmbed(track))
                     .respond();
