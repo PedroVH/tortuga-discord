@@ -2,7 +2,6 @@ package com.pedrovh.tortuga.discord.exception;
 
 import com.pedrovh.tortuga.discord.util.Constants;
 import lombok.NoArgsConstructor;
-import org.javacord.api.entity.message.MessageFlag;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
 
 @NoArgsConstructor

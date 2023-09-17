@@ -17,3 +17,9 @@ Download the `tortuga-discord.jar` from the latest release and define an environ
 with your **discord token** as the value. And lastly, after making sure you have 
 [installed java JDK 17](https://docs.oracle.com/en/java/javase/17/install/installation-jdk-microsoft-windows-platforms.html) 
 correctly, open up a terminal and run `java -jar tortuga-discord.jar`.
+
+# Additional Features
+### Mature content
+You can also authenticate the bot with a Google account, so you can stream mature content! 
+* Set the `DISCORD_GOOGLE_USERNAME` environment variable to your google e-mail.
+* Set the `DISCORD_GOOGLE_PASSWORD` environment variable to your google password. 

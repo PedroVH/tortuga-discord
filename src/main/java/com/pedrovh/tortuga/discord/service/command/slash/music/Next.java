@@ -26,7 +26,7 @@ public class Next extends AbstractVoiceSlashCommand {
 
     protected void optionQuery(SlashCommandInteractionOption option) {
         String value = option.getStringValue().orElseThrow();
-        service.next(api, voiceChannel, value, response);
+        service.next(voiceChannel, value, response);
     }
 
 }

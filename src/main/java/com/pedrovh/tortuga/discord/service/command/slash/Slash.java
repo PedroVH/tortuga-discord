@@ -111,10 +111,16 @@ public enum Slash {
             "skip",
             "Skip current track",
             Skip.class),
-    COMMAND_START(
-            "start",
-            "Adds a track or playlist to the start of the queue",
-            Start.class,
+    COMMAND_REPLACE(
+            "replace",
+            "Replaces a track from the queue",
+            Replace.class,
+            SlashCommandOption.createLongOption(
+                    Slash.OPTION_TRACK,
+                    "The track position in the queue",
+                    true,
+                    0L,
+                    500L),
             SlashCommandOption.createStringOption(
                     Slash.OPTION_QUERY,
                     "The track url, playlist url or search query",
@@ -134,6 +140,7 @@ public enum Slash {
     public static final String OPTION_DELETE = "delete";
     public static final String OPTION_LIST = "list";
     public static final String OPTION_NAME = "name";
+    public static final String OPTION_TRACK = "track";
 
     public final String name;
     public final String description;

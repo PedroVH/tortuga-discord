@@ -2,14 +2,13 @@ package com.pedrovh.tortuga.discord.service.playlist;
 
 import com.pedrovh.tortuga.discord.dao.DAO;
 import com.pedrovh.tortuga.discord.model.user.playlist.Playlist;
+import com.pedrovh.tortuga.discord.model.user.playlist.Track;
 import com.pedrovh.tortuga.discord.model.user.playlist.UserPlaylists;
 import com.pedrovh.tortuga.discord.music.GuildAudioManager;
 import com.pedrovh.tortuga.discord.service.music.MusicService;
 import com.pedrovh.tortuga.discord.service.music.VoiceConnectionService;
 import com.pedrovh.tortuga.discord.service.music.handler.AbstractCommandAudioLoadResultHandler;
 import com.pedrovh.tortuga.discord.util.Constants;
-import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
-import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import jakarta.inject.Singleton;
@@ -76,9 +75,9 @@ public class UserPlaylistService {
         if(audioManager.isPresent()) {
             GuildAudioManager manager = audioManager.get();
             AudioTrack currentTrack = manager.getPlayer().getPlayingTrack();
-            List<String> queue = new ArrayList<>();
-            queue.add(currentTrack.getInfo().uri);
-            queue.addAll(manager.getScheduler().getQueue().stream().map(a -> a.getInfo().uri).toList());
+            List<Track> queue = new ArrayList<>();
+            queue.add(new Track(currentTrack.getInfo()));
+            queue.addAll(manager.getScheduler().getQueue().stream().map(a -> new Track(a.getInfo())).toList());
 
             List<Playlist> playlists = new ArrayList<>(userPlaylists.getPlaylists().stream().filter(p -> !p.getName().equalsIgnoreCase(name)).toList());
             playlists.add(new Playlist(name, queue));
@@ -107,18 +106,19 @@ public class UserPlaylistService {
 
     public void load(final String userId, final ServerVoiceChannel channel, String name, final InteractionImmediateResponseBuilder response) {
         final Server server = channel.getServer();
-        final Optional<Playlist> playlist = get(userId, name);
-        if(playlist.isEmpty()) {
+        final Optional<Playlist> optionalPlaylist = get(userId, name);
+        if(optionalPlaylist.isEmpty()) {
             playlistNotFound(server.getName(), name, response);
             return;
         }
+        final Playlist playlist = optionalPlaylist.get();
         final GuildAudioManager manager = connectionService.getGuildAudioManager(channel);
-        for(String url : playlist.get().getUrls()) {
+        for(Track track : playlist.getTracks()) {
             connectionService.getPlayerManager()
                     .loadItemOrdered(
                             manager,
-                            musicService.getIdentifier(url),
-                            new AbstractCommandAudioLoadResultHandler(manager, connectionService, channel, url, response) {
+                            musicService.getIdentifier(track.getUrl()),
+                            new AbstractCommandAudioLoadResultHandler(manager, connectionService, channel, track.getUrl(), response) {
                                 @Override
                                 protected void handleTrackLoaded(AudioTrack track) {
                                     manager.getScheduler().queue(track, false);
@@ -129,8 +129,12 @@ public class UserPlaylistService {
                                 }
                             });
         }
+        StringBuilder sb = new StringBuilder();
+        appendTrackNames(sb, playlist);
+
         response.addEmbed(new EmbedBuilder()
                         .setTitle(String.format("%s Playlist %s loaded", Constants.EMOJI_SUCCESS, name))
+                        .setDescription(sb.toString())
                         .setColor(Constants.GREEN))
                 .respond();
     }
@@ -143,13 +147,14 @@ public class UserPlaylistService {
         }
         final List<Playlist> playlists = new ArrayList<>(userPlaylists.getPlaylists());
 
-        if(!playlists.removeIf(p -> p.getName().equalsIgnoreCase(name))) {
+        if(playlists.removeIf(p -> p.getName().equalsIgnoreCase(name))) {
             response.addEmbed(new EmbedBuilder()
-                            .setTitle(String.format("%s Playlist %s not found", Constants.EMOJI_WARNING, name))
-                            .setDescription("Use '/playlist save %NAME%' to save the current queue as a playlist."))
+                            .setTitle(String.format("%s Playlist %s deleted", Constants.EMOJI_SUCCESS, name))
+                            .setColor(Constants.GREEN))
                     .setFlags(MessageFlag.EPHEMERAL)
                     .respond();
-        }
+        } else
+            playlistNotFound(server.getName(), name, response);
     }
 
     public void list(String userId, Server server, String name, final InteractionImmediateResponseBuilder response) {
@@ -191,35 +196,22 @@ public class UserPlaylistService {
                 .respond();
     }
 
-    private void appendTrackNames(StringBuilder sb, Playlist playlist) {
-        for(String url : playlist.getUrls()) {
-            connectionService.getPlayerManager().loadItemSync(musicService.getIdentifier(url), new AudioLoadResultHandler() {
-                @Override
-                public void trackLoaded(AudioTrack track) {
-                    sb.append(track.getInfo().title).append("\n");
-                }
-                @Override
-                public void playlistLoaded(AudioPlaylist playlist) {
-                    for(AudioTrack track : playlist.getTracks())
-                        sb.append(track.getInfo().title).append("\n");
-                }
-                @Override
-                public void noMatches() {
-                }
-                @Override
-                public void loadFailed(FriendlyException exception) {
-                }
-            });
-        }
-    }
-
     private UserPlaylists get(String userId) {
         return dao.findById(userId);
     }
 
     private Optional<Playlist> get(String userId, String name) {
         UserPlaylists userPlaylists = get(userId);
+        if(userPlaylists == null)
+            return Optional.empty();
         return userPlaylists.getPlaylists().stream().filter(p -> p.getName().equalsIgnoreCase(name)).findFirst();
+    }
+
+    private void appendTrackNames(StringBuilder sb, Playlist playlist) {
+        int i = 1;
+        for(Track track : playlist.getTracks()) {
+            sb.append(i).append(". ").append(track.getName()).append("\n");
+        }
     }
 
     private void noSavedPlaylist(Server server, final InteractionImmediateResponseBuilder response) {
@@ -236,12 +228,16 @@ public class UserPlaylistService {
     private void playlistNotFound(final String server, final String name, final InteractionImmediateResponseBuilder response) {
         log.warn("[{}] playlist {} not found", server, name);
         response
-                .addEmbed(new EmbedBuilder()
-                        .setTitle(String.format("%s Playlist not found", Constants.EMOJI_WARNING))
-                        .setDescription("Use '/playlist list' to list all saved playlists.")
-                        .setColor(Constants.YELLOW))
+                .addEmbed(playlistNotFoundEmbed())
                 .setFlags(MessageFlag.EPHEMERAL)
                 .respond();
+    }
+
+    private EmbedBuilder playlistNotFoundEmbed() {
+        return new EmbedBuilder()
+                .setTitle(String.format("%s Playlist not found", Constants.EMOJI_WARNING))
+                .setDescription("Use '/playlist list' to list all saved playlists.")
+                .setColor(Constants.YELLOW);
     }
 
 }

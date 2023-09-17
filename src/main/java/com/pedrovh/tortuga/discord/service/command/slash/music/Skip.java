@@ -19,7 +19,7 @@ public class Skip extends AbstractVoiceSlashCommand {
     @Override
     protected void handle() throws BotException {
         if(service.isQueueEmpty(server)) throw new QueueEmptyException();
-        service.skip(event.getApi(), voiceChannel, response);
+        service.skip(voiceChannel, response);
     }
 
 }

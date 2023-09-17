@@ -10,23 +10,21 @@ import org.javacord.api.interaction.SlashCommandInteractionOption;
 
 @Slf4j
 @Singleton
-public class Start extends AbstractVoiceSlashCommand {
+public class Replace extends AbstractVoiceSlashCommand {
 
     private final MusicService service;
 
-    public Start(GuildPreferencesService preferencesService, MusicService service) {
+    public Replace(GuildPreferencesService preferencesService, MusicService service) {
         super(preferencesService);
         this.service = service;
     }
 
     @Override
     protected void handle() throws BotException {
-        interaction.getOptionByName(Slash.OPTION_QUERY).ifPresent(this::optionQuery);
-    }
+        Long pos = interaction.getOptionByName(Slash.OPTION_TRACK).flatMap(SlashCommandInteractionOption::getLongValue).orElseThrow();
+        String q = interaction.getOptionByName(Slash.OPTION_QUERY).flatMap(SlashCommandInteractionOption::getStringValue).orElseThrow();
 
-    protected void optionQuery(SlashCommandInteractionOption option) {
-        String value = option.getStringValue().orElseThrow();
-        service.start(api, voiceChannel, value, response);
+        service.replace(voiceChannel, pos, q, response);
     }
 
 }

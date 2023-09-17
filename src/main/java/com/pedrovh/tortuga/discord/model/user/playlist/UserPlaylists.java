@@ -12,7 +12,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Document(collection = UserPlaylists.COLLECTION, schemaVersion = "1.0")
+@Document(collection = UserPlaylists.COLLECTION, schemaVersion = "1.1")
 public class UserPlaylists implements Serializable {
 
     public static final String COLLECTION = "USER_PLAYLISTS";

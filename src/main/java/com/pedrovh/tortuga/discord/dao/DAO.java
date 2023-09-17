@@ -25,12 +25,12 @@ public class DAO<E, T> {
         return jsondb.findAll(type);
     }
 
-    public List<E> find(String query) {
-        return jsondb.find(query, type);
-    }
-
     public E findById(T id) {
         return jsondb.findById(id, type);
+    }
+
+    public List<E> find(String query) {
+        return jsondb.find(query, type);
     }
 
     public E findOne(String query) {
@@ -47,10 +47,6 @@ public class DAO<E, T> {
 
     public void remove(E pojo) {
         jsondb.remove(pojo, type);
-    }
-
-    public static String equalsQuery(final String property, final String value) {
-        return String.format("/.[%s='%s']", property, value);
     }
 
 }

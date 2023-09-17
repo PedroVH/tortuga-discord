@@ -42,21 +42,23 @@ public abstract class AbstractSlashCommand implements SlashCommand {
         api = interaction.getApi();
         response = interaction.createImmediateResponder();
         textChannel = interaction.getChannel().orElseThrow();
-
-        // server only
-        if(isServerOnly)
-            server = interaction.getServer().orElseThrow(ServerRequiredException::new);
-        serverTextChannel = textChannel.asServerTextChannel().orElse(null);
-        //
-
         user = interaction.getUser();
         String commandName = interaction.getFullCommandName();
 
-        log.info("[{}] user {} sent slash command {} in {}",
-                server.getName(),
-                user.getName(),
-                commandName,
-                textChannel);
+        if(isServerOnly) {
+            server = interaction.getServer().orElseThrow(ServerRequiredException::new);
+            log.info("[{}] user {} sent slash command {} in {}",
+                    server.getName(),
+                    user.getName(),
+                    commandName,
+                    textChannel);
+        } else {
+            serverTextChannel = textChannel.asServerTextChannel().orElse(null);
+            log.info("user {} sent slash command {} in {}",
+                    user.getName(),
+                    commandName,
+                    textChannel);
+        }
     }
 
     protected abstract void handle() throws BotException;

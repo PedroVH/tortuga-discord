@@ -48,7 +48,7 @@ public class MessageListener implements MessageCreateListener {
             }
             if(textChannel.getIdAsString().equals(preferences.get().getMusicChannelId())) {
                 log.info("[{}] {}: {}", guild.getName(), author.getDisplayName(guild), content);
-                musicService.handle(event.getApi(), message);
+                musicService.handle(message);
             }
         }
     }

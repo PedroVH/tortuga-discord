@@ -1,17 +1,14 @@
 package com.pedrovh.tortuga.discord.service.music;
 
 import com.pedrovh.tortuga.discord.music.GuildAudioManager;
-import com.pedrovh.tortuga.discord.service.music.handler.AbstractCommandAudioLoadResultHandler;
 import com.pedrovh.tortuga.discord.service.music.handler.DefaultAudioLoadResultHandler;
 import com.pedrovh.tortuga.discord.service.music.handler.NextCommandAudioLoadResultHandler;
-import com.pedrovh.tortuga.discord.service.music.handler.StartCommandAudioLoadResultHandler;
+import com.pedrovh.tortuga.discord.service.music.handler.ReplaceCommandAudioLoadResultHandler;
 import com.pedrovh.tortuga.discord.util.AudioTrackUtils;
 import com.pedrovh.tortuga.discord.util.Constants;
-import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
-import org.javacord.api.DiscordApi;
 import org.javacord.api.entity.channel.ServerVoiceChannel;
 import org.javacord.api.entity.message.Message;
 import org.javacord.api.entity.message.MessageBuilder;
@@ -40,7 +37,7 @@ public class MusicService {
         this.connectionService = connectionService;
     }
 
-    public void handle(final DiscordApi api, final Message message) {
+    public void handle(final Message message) {
         try{
             final Server server = message.getServer().orElseThrow(RuntimeException::new);
             final User author = message.getUserAuthor().orElseThrow();
@@ -66,7 +63,7 @@ public class MusicService {
         }
     }
 
-    public void skip(final DiscordApi api, final ServerVoiceChannel voiceChannel, InteractionImmediateResponseBuilder response) {
+    public void skip(final ServerVoiceChannel voiceChannel, InteractionImmediateResponseBuilder response) {
         GuildAudioManager manager = connectionService.getGuildAudioManager(voiceChannel);
         manager.getScheduler().nextTrack();
 
@@ -77,7 +74,7 @@ public class MusicService {
                 .respond();
     }
 
-    public void remove(DiscordApi api, ServerVoiceChannel voiceChannel, InteractionImmediateResponseBuilder response, int start, int end) {
+    public void remove(ServerVoiceChannel voiceChannel, InteractionImmediateResponseBuilder response, int start, int end) {
         GuildAudioManager manager = connectionService.getGuildAudioManager(voiceChannel);
         List<AudioTrack> removed = manager.getScheduler().removeFromQueue(start, end);
 
@@ -149,7 +146,7 @@ public class MusicService {
         }
     }
 
-    public void loop(final DiscordApi api, final ServerVoiceChannel voiceChannel, final InteractionImmediateResponseBuilder response) {
+    public void loop(final ServerVoiceChannel voiceChannel, final InteractionImmediateResponseBuilder response) {
         GuildAudioManager manager = connectionService.getGuildAudioManager(voiceChannel);
         boolean loop = manager.getScheduler().toggleLoop();
         String enabled = loop?"enabled":"disabled";
@@ -219,7 +216,7 @@ public class MusicService {
                         new DefaultAudioLoadResultHandler(manager, connectionService, channel, identifier, message));
     }
 
-    public void loadAndPlay(final String query, final ServerVoiceChannel channel, InteractionImmediateResponseBuilder response) {
+    public void replace(final ServerVoiceChannel channel, final Long pos, final String query, InteractionImmediateResponseBuilder responder) {
         final GuildAudioManager manager = connectionService.getGuildAudioManager(channel);
         final String identifier = getIdentifier(query);
 
@@ -227,30 +224,10 @@ public class MusicService {
                 .loadItemOrdered(
                         manager,
                         identifier,
-                        new AbstractCommandAudioLoadResultHandler(manager, connectionService, channel, identifier, response) {
-                            @Override
-                            protected void handleTrackLoaded(AudioTrack track) {
-                                manager.getScheduler().queue(track);
-                            }
-                            @Override
-                            protected void handlePlaylistLoaded(AudioPlaylist playlist) {
-                                manager.getScheduler().queuePlaylist(playlist);
-                            }
-                        });
+                        new ReplaceCommandAudioLoadResultHandler(manager, connectionService, channel, identifier, responder, pos));
     }
 
-    public void start(final DiscordApi api, final ServerVoiceChannel channel, final String query, InteractionImmediateResponseBuilder responder) {
-        final GuildAudioManager manager = connectionService.getGuildAudioManager(channel);
-        final String identifier = getIdentifier(query);
-
-        connectionService.getPlayerManager()
-                .loadItemOrdered(
-                        manager,
-                        identifier,
-                        new StartCommandAudioLoadResultHandler(manager, connectionService, channel, identifier, responder));
-    }
-
-    public void next(final DiscordApi api, final ServerVoiceChannel channel, final String query, InteractionImmediateResponseBuilder responder) {
+    public void next(final ServerVoiceChannel channel, final String query, InteractionImmediateResponseBuilder responder) {
         final GuildAudioManager manager = connectionService.getGuildAudioManager(channel);
         final String identifier = getIdentifier(query);
 

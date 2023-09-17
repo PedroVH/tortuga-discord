@@ -19,7 +19,7 @@ public class Loop extends AbstractVoiceSlashCommand {
 
     @Override
     protected void handle() throws BotException {
-        service.loop(api, voiceChannel, response);
+        service.loop(voiceChannel, response);
     }
 
 }

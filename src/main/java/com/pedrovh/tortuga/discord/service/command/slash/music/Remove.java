@@ -32,7 +32,8 @@ public class Remove extends AbstractVoiceSlashCommand {
                 public EmbedBuilder getEmbed() {
                     return new EmbedBuilder()
                             .setTitle(Constants.TITLE_ERROR)
-                            .setDescription("'Start' position must be smaller than 'end' position!");
+                            .setDescription("'Start' position must be smaller than 'end' position!")
+                            .setColor(Constants.RED);
                 }
             };
         }
@@ -40,7 +41,7 @@ public class Remove extends AbstractVoiceSlashCommand {
             throw new QueueEmptyException();
         }
 
-        service.remove(event.getApi(), voiceChannel, response, start, end);
+        service.remove(voiceChannel, response, start, end);
     }
 
     protected Long getLongOption(String name) {

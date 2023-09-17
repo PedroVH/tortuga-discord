@@ -136,6 +136,34 @@ public class TrackScheduler extends AudioEventAdapter {
         }
     }
 
+    public void replaceTrack(int atPosition, AudioTrack withTrack) {
+        if(atPosition <= 0) return;
+        final List<AudioTrack> queueList = new ArrayList<>(queue);
+        final List<AudioTrack> before = queueList.subList(0, atPosition);
+        final List<AudioTrack> after  = queueList.subList(atPosition, 0);
+
+        final List<AudioTrack> result = new ArrayList<>(before);
+        result.add(withTrack);
+        result.addAll(after);
+
+        queue.clear();
+        queue.addAll(result);
+    }
+
+    public void replaceTrack(int atPosition, AudioPlaylist withPlaylist) {
+        if(atPosition <= 0) return;
+        final List<AudioTrack> queueList = new ArrayList<>(queue);
+        final List<AudioTrack> before = queueList.subList(0, atPosition);
+        final List<AudioTrack> after  = queueList.subList(atPosition, 0);
+
+        final List<AudioTrack> result = new ArrayList<>(before);
+        result.addAll(AudioTrackUtils.getTracksAfterSelectedTrack(withPlaylist));
+        result.addAll(after);
+
+        queue.clear();
+        queue.addAll(result);
+    }
+
     public boolean toggleLoop() {
         loop = !loop;
         return loop;
