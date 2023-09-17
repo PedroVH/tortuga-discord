@@ -1,6 +1,6 @@
 package com.pedrovh.tortuga.discord.music;
 
-import com.pedrovh.tortuga.discord.guild.service.GuildPreferencesService;
+import com.pedrovh.tortuga.discord.service.guild.GuildPreferencesService;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import lombok.Getter;

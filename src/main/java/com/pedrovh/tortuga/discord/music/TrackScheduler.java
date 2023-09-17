@@ -1,6 +1,7 @@
 package com.pedrovh.tortuga.discord.music;
 
 import com.pedrovh.tortuga.discord.util.AudioTrackUtils;
+import com.pedrovh.tortuga.discord.util.ResponseUtils;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
@@ -65,12 +66,12 @@ public class TrackScheduler extends AudioEventAdapter {
         if (!player.startTrack(track, true)) {
             log.info("[{}] adding {} to queue: {}", server.getName(), track.getInfo().title, queue.offer(track));
             if(notify)
-                textChannel.sendMessage(AudioTrackUtils.getAddedToPlaylistEmbed(track));
+                textChannel.sendMessage(ResponseUtils.getAddedToPlaylistEmbed(track));
         } else {
             latestEndOfQueue = null;
             log.info("[{}] playing {}", server.getName(), track.getInfo().title);
             if(notify)
-                textChannel.sendMessage(AudioTrackUtils.getPLayingEmbed(track));
+                textChannel.sendMessage(ResponseUtils.getPLayingEmbed(track));
         }
     }
 
@@ -131,7 +132,7 @@ public class TrackScheduler extends AudioEventAdapter {
             log.info("[{}] playing {}", server.getName(), track.getInfo().title);
             latestEndOfQueue = null;
             if(notify)
-                textChannel.sendMessage(AudioTrackUtils.getPLayingEmbed(track));
+                textChannel.sendMessage(ResponseUtils.getPLayingEmbed(track));
         }
     }
 
