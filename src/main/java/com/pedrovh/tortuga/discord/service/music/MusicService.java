@@ -166,15 +166,6 @@ public class MusicService {
             StringBuilder sb = new StringBuilder();
 
             AudioTrack currentTrack = manager.getPlayer().getPlayingTrack();
-
-            if(currentTrack == null) {
-                response.addEmbed(
-                                new EmbedBuilder()
-                                        .setTitle(String.format("%s Queue is empty!", Constants.EMOJI_SUCCESS))
-                                        .setColor(Constants.GREEN))
-                        .respond();
-                return;
-            }
             sb.append(Constants.EMOJI_SONG).append(" ").append(currentTrack.getInfo().title).append("\n");
 
             long totalTimeMs = currentTrack.getDuration() - currentTrack.getPosition();
@@ -216,7 +207,7 @@ public class MusicService {
                         new DefaultAudioLoadResultHandler(manager, connectionService, channel, identifier, message));
     }
 
-    public void replace(final ServerVoiceChannel channel, final Long pos, final String query, InteractionImmediateResponseBuilder responder) {
+    public void replace(final ServerVoiceChannel channel, final long pos, final String query, InteractionImmediateResponseBuilder responder) {
         final GuildAudioManager manager = connectionService.getGuildAudioManager(channel);
         final String identifier = getIdentifier(query);
 

@@ -1,6 +1,7 @@
 package com.pedrovh.tortuga.discord.service.command.slash.music;
 
 import com.pedrovh.tortuga.discord.exception.BotException;
+import com.pedrovh.tortuga.discord.exception.QueueEmptyException;
 import com.pedrovh.tortuga.discord.service.guild.GuildPreferencesService;
 import com.pedrovh.tortuga.discord.service.music.MusicService;
 import jakarta.inject.Singleton;
@@ -19,6 +20,9 @@ public class Queue extends AbstractVoiceSlashCommand {
 
     @Override
     protected void handle() throws BotException {
+        if(service.isQueueEmpty(server)) {
+            throw new QueueEmptyException();
+        }
         service.queue(server, response);
     }
 }

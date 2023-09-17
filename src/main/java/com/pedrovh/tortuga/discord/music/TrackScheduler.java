@@ -140,7 +140,7 @@ public class TrackScheduler extends AudioEventAdapter {
         if(atPosition <= 0) return;
         final List<AudioTrack> queueList = new ArrayList<>(queue);
         final List<AudioTrack> before = queueList.subList(0, atPosition);
-        final List<AudioTrack> after  = queueList.subList(atPosition, 0);
+        final List<AudioTrack> after = queueList.subList(atPosition, queueList.size() - 1);
 
         final List<AudioTrack> result = new ArrayList<>(before);
         result.add(withTrack);
