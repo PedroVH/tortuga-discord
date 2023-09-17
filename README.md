@@ -1,24 +1,19 @@
-## Micronaut 4.0.1 Documentation
+# Tortuga Discord
+A discord music bot, with some extra features! The aim of this project is to bring an all-in-one discord bot, 
+that fits all my needs.
 
-- [User Guide](https://docs.micronaut.io/4.0.1/guide/index.html)
-- [API Reference](https://docs.micronaut.io/4.0.1/api/index.html)
-- [Configuration Reference](https://docs.micronaut.io/4.0.1/guide/configurationreference.html)
-- [Micronaut Guides](https://guides.micronaut.io/index.html)
----
+### Requirements
+* A discord application
+* Java 17
 
-- [Micronaut Maven Plugin documentation](https://micronaut-projects.github.io/micronaut-maven-plugin/latest/)
-## Feature http-client documentation
-
-- [Micronaut HTTP Client documentation](https://docs.micronaut.io/latest/guide/index.html#nettyHttpClient)
-
-
-## Feature micronaut-aot documentation
-
-- [Micronaut AOT documentation](https://micronaut-projects.github.io/micronaut-aot/latest/guide/)
-
-
-## Feature maven-enforcer-plugin documentation
-
-- [https://maven.apache.org/enforcer/maven-enforcer-plugin/](https://maven.apache.org/enforcer/maven-enforcer-plugin/)
-
-
+# How to Use
+First, you need to create a discord bot. There are plenty of resources on how to do that, but to summarise, head to 
+[the discord developer portal](https://discord.com/developers/applications) and create a new application. 
+You should give this bot **admin** permissions when inviting him to a server. While you're there, save the 
+**discord token** for later.
+</br>
+</br>
+Download the `tortuga-discord.jar` from the latest release and define an environment variable called `DISCORD_TOKEN`, 
+with your **discord token** as the value. And lastly, after making sure you have 
+[installed java JDK 17](https://docs.oracle.com/en/java/javase/17/install/installation-jdk-microsoft-windows-platforms.html) 
+correctly, open up a terminal and run `java -jar tortuga-discord.jar`.
