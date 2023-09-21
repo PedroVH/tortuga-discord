@@ -1,6 +1,7 @@
 package com.pedrovh.tortuga.discord.service.command.slash.health;
 
 import com.pedrovh.tortuga.discord.exception.BotException;
+import com.pedrovh.tortuga.discord.service.i18n.MessageService;
 import com.pedrovh.tortuga.discord.service.command.slash.AbstractSlashCommand;
 import com.pedrovh.tortuga.discord.util.Constants;
 import jakarta.inject.Singleton;
@@ -11,8 +12,8 @@ import org.javacord.api.entity.message.embed.EmbedBuilder;
 @Singleton
 public class Ping extends AbstractSlashCommand {
 
-    protected Ping() {
-        super(false);
+    protected Ping(MessageService messages) {
+        super(messages);
     }
 
     @Override

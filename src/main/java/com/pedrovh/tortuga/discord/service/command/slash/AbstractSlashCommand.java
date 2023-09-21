@@ -1,12 +1,10 @@
 package com.pedrovh.tortuga.discord.service.command.slash;
 
 import com.pedrovh.tortuga.discord.exception.BotException;
-import com.pedrovh.tortuga.discord.exception.ServerRequiredException;
+import com.pedrovh.tortuga.discord.service.i18n.MessageService;
 import lombok.extern.slf4j.Slf4j;
 import org.javacord.api.DiscordApi;
-import org.javacord.api.entity.channel.ServerTextChannel;
 import org.javacord.api.entity.channel.TextChannel;
-import org.javacord.api.entity.server.Server;
 import org.javacord.api.entity.user.User;
 import org.javacord.api.event.interaction.SlashCommandCreateEvent;
 import org.javacord.api.interaction.SlashCommandInteraction;
@@ -15,19 +13,17 @@ import org.javacord.api.interaction.callback.InteractionImmediateResponseBuilder
 @Slf4j
 public abstract class AbstractSlashCommand implements SlashCommand {
 
-    private final boolean isServerOnly;
 
+    protected MessageService messages;
     protected SlashCommandCreateEvent event;
-    protected SlashCommandInteraction interaction;
     protected DiscordApi api;
-    protected Server server;
+    protected SlashCommandInteraction interaction;
     protected InteractionImmediateResponseBuilder response;
     protected TextChannel textChannel;
-    protected ServerTextChannel serverTextChannel;
     protected User user;
 
-    protected AbstractSlashCommand(boolean isServerOnly) {
-        this.isServerOnly = isServerOnly;
+    protected AbstractSlashCommand(MessageService messages) {
+        this.messages = messages;
     }
 
     @Override
@@ -43,22 +39,15 @@ public abstract class AbstractSlashCommand implements SlashCommand {
         response = interaction.createImmediateResponder();
         textChannel = interaction.getChannel().orElseThrow();
         user = interaction.getUser();
-        String commandName = interaction.getFullCommandName();
 
-        if(isServerOnly) {
-            server = interaction.getServer().orElseThrow(ServerRequiredException::new);
-            log.info("[{}] user {} sent slash command {} in {}",
-                    server.getName(),
-                    user.getName(),
-                    commandName,
-                    textChannel);
-        } else {
-            serverTextChannel = textChannel.asServerTextChannel().orElse(null);
-            log.info("user {} sent slash command {} in {}",
-                    user.getName(),
-                    commandName,
-                    textChannel);
-        }
+        log(interaction.getFullCommandName());
+    }
+
+    protected void log(String commandName) {
+        log.info("user {} sent slash command {} in {}",
+                user.getName(),
+                commandName,
+                textChannel);
     }
 
     protected abstract void handle() throws BotException;

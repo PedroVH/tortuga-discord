@@ -2,6 +2,7 @@ package com.pedrovh.tortuga.discord.service.command.slash.music;
 
 import com.pedrovh.tortuga.discord.exception.BotException;
 import com.pedrovh.tortuga.discord.exception.QueueEmptyException;
+import com.pedrovh.tortuga.discord.service.i18n.MessageService;
 import com.pedrovh.tortuga.discord.service.guild.GuildPreferencesService;
 import com.pedrovh.tortuga.discord.service.music.MusicService;
 import com.pedrovh.tortuga.discord.service.command.slash.Slash;
@@ -16,8 +17,8 @@ public class Remove extends AbstractVoiceSlashCommand {
 
     private final MusicService service;
 
-    protected Remove(GuildPreferencesService preferencesService, MusicService service) {
-        super(preferencesService);
+    protected Remove(GuildPreferencesService preferencesService, MusicService service, MessageService messages) {
+        super(preferencesService, messages);
         this.service = service;
     }
 
@@ -31,14 +32,14 @@ public class Remove extends AbstractVoiceSlashCommand {
                 @Override
                 public EmbedBuilder getEmbed() {
                     return new EmbedBuilder()
-                            .setTitle(Constants.TITLE_ERROR)
-                            .setDescription("'Start' position must be smaller than 'end' position!")
+                            .setTitle(messages.get(server.getIdAsString(), "command.music.remove.error.invalid-position.title"))
+                            .setDescription(messages.get(server.getIdAsString(), "command.music.remove.error.invalid-position.description"))
                             .setColor(Constants.RED);
                 }
             };
         }
         if(service.isQueueEmpty(server)) {
-            throw new QueueEmptyException();
+            throw new QueueEmptyException(server.getIdAsString(), messages);
         }
 
         service.remove(voiceChannel, response, start, end);

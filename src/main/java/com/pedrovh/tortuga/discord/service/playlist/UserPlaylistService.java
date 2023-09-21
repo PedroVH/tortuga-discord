@@ -5,6 +5,7 @@ import com.pedrovh.tortuga.discord.model.user.playlist.Playlist;
 import com.pedrovh.tortuga.discord.model.user.playlist.Track;
 import com.pedrovh.tortuga.discord.model.user.playlist.UserPlaylists;
 import com.pedrovh.tortuga.discord.music.GuildAudioManager;
+import com.pedrovh.tortuga.discord.service.i18n.MessageService;
 import com.pedrovh.tortuga.discord.service.music.MusicService;
 import com.pedrovh.tortuga.discord.service.music.VoiceConnectionService;
 import com.pedrovh.tortuga.discord.service.music.handler.AbstractCommandAudioLoadResultHandler;
@@ -32,10 +33,12 @@ public class UserPlaylistService {
     private final DAO<UserPlaylists, String> dao = new DAO<>(UserPlaylists.class);
     private final VoiceConnectionService connectionService;
     private final MusicService musicService;
+    private final MessageService messages;
 
-    public UserPlaylistService(VoiceConnectionService connectionService, MusicService musicService) {
+    public UserPlaylistService(VoiceConnectionService connectionService, MusicService musicService, MessageService messages) {
         this.connectionService = connectionService;
         this.musicService = musicService;
+        this.messages = messages;
     }
 
     public void save(String userId, Server server, String name, final InteractionImmediateResponseBuilder response, boolean replace) {
@@ -50,18 +53,18 @@ public class UserPlaylistService {
         // if already exists, asks if you want to replace it
         if(!replace && get(userId, name).isPresent()) {
             response.addEmbed(new EmbedBuilder()
-                            .setTitle(String.format("%s There's already a saved playlist called %s. Do you wish to replace it?", Constants.EMOJI_INFO, name)))
+                            .setTitle(messages.get("command.music.playlist.save.replace.title", name)))
                     .addComponents(
                             new ActionRowBuilder().addComponents(
                                             new ButtonBuilder()
                                                     .setCustomId(Constants.EVENT_PLAYLIST_REPLACE + name)
-                                                    .setLabel("Yes!")
+                                                    .setLabel(messages.get(server.getIdAsString(), "command.music.playlist.save.replace.button.yes"))
                                                     .setStyle(ButtonStyle.SUCCESS)
                                                     .setEmoji(Constants.EMOJI_SUCCESS)
                                                     .build(),
                                             new ButtonBuilder()
                                                     .setCustomId(Constants.EVENT_CANCEL)
-                                                    .setLabel("No!")
+                                                    .setLabel(messages.get(server.getIdAsString(), "command.music.playlist.save.replace.button.no"))
                                                     .setStyle(ButtonStyle.DANGER)
                                                     .setEmoji(Constants.EMOJI_ERROR)
                                                     .build())
@@ -89,7 +92,7 @@ public class UserPlaylistService {
             log.info("[{}] updated playlist {}", server.getName(), name);
             response.addEmbed(
                             new EmbedBuilder()
-                                    .setTitle(String.format("%s Saved playlist %s", Constants.EMOJI_SUCCESS, name))
+                                    .setTitle(messages.get(server.getIdAsString(), "command.music.playlist.save.title", name))
                                     .setColor(Constants.GREEN))
                     .setFlags(MessageFlag.EPHEMERAL)
                     .respond();
@@ -97,7 +100,7 @@ public class UserPlaylistService {
             log.info("[{}] unable to save playlist: GuildAudioManager not found", server.getName());
             response.addEmbed(
                             new EmbedBuilder()
-                                    .setTitle(String.format("%s There's no queue!", Constants.EMOJI_WARNING))
+                                    .setTitle(messages.get(server.getIdAsString(), "command.music.playlist.save.warn.no-queue"))
                                     .setColor(Constants.YELLOW))
                     .setFlags(MessageFlag.EPHEMERAL)
                     .respond();
@@ -118,7 +121,7 @@ public class UserPlaylistService {
                     .loadItemOrdered(
                             manager,
                             musicService.getIdentifier(track.getUrl()),
-                            new AbstractCommandAudioLoadResultHandler(manager, connectionService, channel, track.getUrl(), response) {
+                            new AbstractCommandAudioLoadResultHandler(manager, connectionService, channel, track.getUrl(), messages, response) {
                                 @Override
                                 protected void handleTrackLoaded(AudioTrack track) {
                                     manager.getScheduler().queue(track, false);
@@ -133,7 +136,7 @@ public class UserPlaylistService {
         appendTrackNames(sb, playlist);
 
         response.addEmbed(new EmbedBuilder()
-                        .setTitle(String.format("%s Playlist %s loaded", Constants.EMOJI_SUCCESS, name))
+                        .setTitle(messages.get(server.getIdAsString(), "command.music.playlist.load.title", name))
                         .setDescription(sb.toString())
                         .setColor(Constants.GREEN))
                 .respond();
@@ -149,7 +152,7 @@ public class UserPlaylistService {
 
         if(playlists.removeIf(p -> p.getName().equalsIgnoreCase(name))) {
             response.addEmbed(new EmbedBuilder()
-                            .setTitle(String.format("%s Playlist %s deleted", Constants.EMOJI_SUCCESS, name))
+                            .setTitle(messages.get(server.getIdAsString(), "command.music.playlist.delete.title", name))
                             .setColor(Constants.GREEN))
                     .setFlags(MessageFlag.EPHEMERAL)
                     .respond();
@@ -164,11 +167,10 @@ public class UserPlaylistService {
             return;
         }
         final StringBuilder sb = new StringBuilder();
-
         appendTrackNames(sb, playlist.get());
 
         response.addEmbed(new EmbedBuilder()
-                        .setTitle(String.format("%s Playlist %s", Constants.EMOJI_SUCCESS, name))
+                        .setTitle(messages.get(server.getIdAsString(), "command.music.playlist.list.title", name))
                         .setDescription(sb.toString())
                         .setColor(Constants.GREEN))
                 .setFlags(MessageFlag.EPHEMERAL)
@@ -189,7 +191,7 @@ public class UserPlaylistService {
         }
 
         response.addEmbed(new EmbedBuilder()
-                        .setTitle(String.format("%s All saved playlists", Constants.EMOJI_SUCCESS))
+                        .setTitle(messages.get(server.getIdAsString(), "command.music.playlist.list.all.title"))
                         .setDescription(sb.toString())
                         .setColor(Constants.GREEN))
                 .setFlags(MessageFlag.EPHEMERAL)
@@ -218,8 +220,8 @@ public class UserPlaylistService {
         log.warn("[{}] there's no saved playlist", server.getName());
         response
                 .addEmbed(new EmbedBuilder()
-                        .setTitle(String.format("%s You haven't saved a playlist!", Constants.EMOJI_WARNING))
-                        .setDescription("Use '/playlist save %NAME%' to save the current queue as a playlist.")
+                        .setTitle(messages.get(server.getIdAsString(), "command.music.playlist.warn.never-saved.title"))
+                        .setDescription(messages.get(server.getIdAsString(), "command.music.playlist.warn.never-saved.description"))
                         .setColor(Constants.YELLOW))
                 .setFlags(MessageFlag.EPHEMERAL)
                 .respond();
@@ -228,16 +230,12 @@ public class UserPlaylistService {
     private void playlistNotFound(final String server, final String name, final InteractionImmediateResponseBuilder response) {
         log.warn("[{}] playlist {} not found", server, name);
         response
-                .addEmbed(playlistNotFoundEmbed())
+                .addEmbed(new EmbedBuilder()
+                        .setTitle(messages.get(server, "command.music.playlist.warn.not-found.title"))
+                        .setDescription(messages.get(server, "command.music.playlist.warn.not-found.description"))
+                        .setColor(Constants.YELLOW))
                 .setFlags(MessageFlag.EPHEMERAL)
                 .respond();
-    }
-
-    private EmbedBuilder playlistNotFoundEmbed() {
-        return new EmbedBuilder()
-                .setTitle(String.format("%s Playlist not found", Constants.EMOJI_WARNING))
-                .setDescription("Use '/playlist list' to list all saved playlists.")
-                .setColor(Constants.YELLOW);
     }
 
 }

@@ -1,6 +1,7 @@
 package com.pedrovh.tortuga.discord.service.command.slash.music;
 
 import com.pedrovh.tortuga.discord.exception.BotException;
+import com.pedrovh.tortuga.discord.service.i18n.MessageService;
 import com.pedrovh.tortuga.discord.service.guild.GuildPreferencesService;
 import com.pedrovh.tortuga.discord.util.Constants;
 import com.pedrovh.tortuga.discord.service.music.VoiceConnectionService;
@@ -12,8 +13,8 @@ public class Leave extends AbstractVoiceSlashCommand {
 
     private final VoiceConnectionService service;
 
-    public Leave(GuildPreferencesService preferencesService, VoiceConnectionService service) {
-        super(preferencesService);
+    public Leave(GuildPreferencesService preferencesService, VoiceConnectionService service, MessageService messages) {
+        super(preferencesService, messages);
         this.service = service;
     }
 
@@ -23,7 +24,7 @@ public class Leave extends AbstractVoiceSlashCommand {
 
         response
                 .addEmbed(new EmbedBuilder()
-                        .setTitle("\uD83C\uDF42 Leaving...")
+                        .setTitle(messages.get(server.getIdAsString(), "command.music.leave.title"))
                         .setColor(Constants.GREEN))
                 .respond()
                 .join();

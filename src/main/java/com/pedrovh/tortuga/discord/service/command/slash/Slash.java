@@ -1,10 +1,12 @@
 package com.pedrovh.tortuga.discord.service.command.slash;
 
 import com.pedrovh.tortuga.discord.service.command.Help;
+import com.pedrovh.tortuga.discord.service.command.slash.bot.Language;
 import com.pedrovh.tortuga.discord.service.command.slash.channel.Channel;
 import com.pedrovh.tortuga.discord.service.command.slash.health.Ping;
 import com.pedrovh.tortuga.discord.service.command.slash.messages.Clear;
 import com.pedrovh.tortuga.discord.service.command.slash.music.*;
+import com.pedrovh.tortuga.discord.service.command.slash.music.playlist.Playlist;
 import org.javacord.api.entity.permission.PermissionType;
 import org.javacord.api.interaction.SlashCommandBuilder;
 import org.javacord.api.interaction.SlashCommandOption;
@@ -13,6 +15,12 @@ import java.util.EnumSet;
 import java.util.List;
 
 public enum Slash {
+
+    COMMAND_LANGUAGE(
+            "language",
+            "Sets the language the bot should use",
+            Language.class,
+            EnumSet.of(PermissionType.ADMINISTRATOR)),
 
     COMMAND_CHANNEL(
             "channel",

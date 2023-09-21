@@ -1,7 +1,9 @@
-package com.pedrovh.tortuga.discord.service.command.slash.music;
+package com.pedrovh.tortuga.discord.service.command.slash.music.playlist;
 
 import com.pedrovh.tortuga.discord.exception.BotException;
+import com.pedrovh.tortuga.discord.service.i18n.MessageService;
 import com.pedrovh.tortuga.discord.service.command.slash.Slash;
+import com.pedrovh.tortuga.discord.service.command.slash.music.AbstractVoiceSlashCommand;
 import com.pedrovh.tortuga.discord.service.guild.GuildPreferencesService;
 import com.pedrovh.tortuga.discord.service.playlist.UserPlaylistService;
 import jakarta.inject.Singleton;
@@ -16,8 +18,8 @@ public class Playlist extends AbstractVoiceSlashCommand {
 
     private final UserPlaylistService service;
 
-    protected Playlist(GuildPreferencesService preferencesService, UserPlaylistService service) {
-        super(preferencesService);
+    protected Playlist(GuildPreferencesService preferencesService, UserPlaylistService service, MessageService messages) {
+        super(preferencesService, messages);
         this.service = service;
     }
 

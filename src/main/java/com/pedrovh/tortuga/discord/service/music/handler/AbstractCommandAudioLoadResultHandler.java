@@ -1,6 +1,7 @@
 package com.pedrovh.tortuga.discord.service.music.handler;
 
 import com.pedrovh.tortuga.discord.music.GuildAudioManager;
+import com.pedrovh.tortuga.discord.service.i18n.MessageService;
 import com.pedrovh.tortuga.discord.service.music.VoiceConnectionService;
 import org.javacord.api.entity.channel.ServerVoiceChannel;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
@@ -14,8 +15,9 @@ public abstract class AbstractCommandAudioLoadResultHandler extends AbstractAudi
                                                  VoiceConnectionService connectionService,
                                                  ServerVoiceChannel voiceChannel,
                                                  String identifier,
+                                                 MessageService messages,
                                                  InteractionImmediateResponseBuilder responder) {
-        super(manager, connectionService, voiceChannel, identifier);
+        super(manager, connectionService, voiceChannel, identifier, messages);
         this.responder = responder;
     }
 

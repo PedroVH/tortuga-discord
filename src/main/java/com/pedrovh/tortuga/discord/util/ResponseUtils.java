@@ -13,7 +13,7 @@ public class ResponseUtils {
         String duration = track.getInfo().isStream ? Constants.EMOJI_LIVE + "Live" : AudioTrackUtils.formatTrackDuration(track.getDuration());
         return new EmbedBuilder()
                 .setTitle(String.format(
-                        "%s [%s] Playing %s",
+                        "%s [%s] %s",
                         Constants.EMOJI_SONG,
                         duration,
                         track.getInfo().title))
@@ -23,7 +23,7 @@ public class ResponseUtils {
 
     public EmbedBuilder getAddedToPlaylistEmbed(AudioTrack track) {
         return new EmbedBuilder()
-                .setTitle(String.format("%s %s added to the queue", Constants.EMOJI_SONG, track.getInfo().title))
+                .setTitle(String.format("%s %s %s", Constants.EMOJI_SONG, Constants.EMOJI_LIST, track.getInfo().title))
                 .setDescription(track.getInfo().author)
                 .setColor(Constants.GREEN);
     }

@@ -1,6 +1,7 @@
 package com.pedrovh.tortuga.discord.service.music.handler;
 
 import com.pedrovh.tortuga.discord.music.GuildAudioManager;
+import com.pedrovh.tortuga.discord.service.i18n.MessageService;
 import com.pedrovh.tortuga.discord.service.music.VoiceConnectionService;
 import com.pedrovh.tortuga.discord.util.Constants;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
@@ -22,8 +23,9 @@ public class DefaultAudioLoadResultHandler extends AbstractAudioLoadResultHandle
                                          VoiceConnectionService connectionService,
                                          ServerVoiceChannel voiceChannel,
                                          String identifier,
+                                         MessageService messages,
                                          Message message) {
-        super(manager, connectionService, voiceChannel, identifier);
+        super(manager, connectionService, voiceChannel, identifier, messages);
 
         this.message = message;
     }
@@ -40,7 +42,7 @@ public class DefaultAudioLoadResultHandler extends AbstractAudioLoadResultHandle
         tracks.forEach(track -> sb.append(track.getInfo().title).append("\n"));
 
         EmbedBuilder embed = new EmbedBuilder()
-                .setTitle(String.format("%s %s Tacks added to the queue", Constants.EMOJI_SONG, tracks.size()))
+                .setTitle(messages.get(server.getIdAsString(), "command.music.loading.playlist.title", tracks.size()))
                 .setDescription(sb.toString())
                 .setColor(Constants.GREEN);
 
