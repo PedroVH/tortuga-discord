@@ -51,6 +51,11 @@
             <artifactId>micronaut-jackson-databind</artifactId>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>io.micronaut</groupId>
+            <artifactId>micronaut-management</artifactId>
+            <scope>compile</scope>
+        </dependency>
         <!--discord-->
         <dependency>
             <groupId>org.javacord</groupId>
