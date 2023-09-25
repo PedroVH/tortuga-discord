@@ -10,16 +10,6 @@ import org.javacord.api.interaction.callback.InteractionImmediateResponseBuilder
 @NoArgsConstructor
 public abstract class BotException extends Exception {
 
-    public BotException(String message) {
-        super(message);
-    }
-
-    public BotException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public abstract EmbedBuilder getEmbed();
-
     public void respond(InteractionImmediateResponseBuilder responder) {
         responder
                 .addEmbed(getEmbed())
@@ -32,6 +22,8 @@ public abstract class BotException extends Exception {
         mb.addEmbed(getEmbed())
                 .send(channel);
     }
+
+    public abstract EmbedBuilder getEmbed();
 
     protected MessageFlag[] getMessageFlags() {
         return new MessageFlag[] {MessageFlag.EPHEMERAL};

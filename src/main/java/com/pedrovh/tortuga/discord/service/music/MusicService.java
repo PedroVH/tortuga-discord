@@ -1,6 +1,7 @@
 package com.pedrovh.tortuga.discord.service.music;
 
 import com.pedrovh.tortuga.discord.music.GuildAudioManager;
+import com.pedrovh.tortuga.discord.service.i18n.MessageService;
 import com.pedrovh.tortuga.discord.service.music.handler.DefaultAudioLoadResultHandler;
 import com.pedrovh.tortuga.discord.service.music.handler.NextCommandAudioLoadResultHandler;
 import com.pedrovh.tortuga.discord.service.music.handler.ReplaceCommandAudioLoadResultHandler;
@@ -22,41 +23,40 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.Queue;
+import java.util.*;
 
 @Slf4j
 @Singleton
 public class MusicService {
 
     private final VoiceConnectionService connectionService;
+    private final MessageService messages;
 
-    public MusicService(VoiceConnectionService connectionService) {
+    public MusicService(VoiceConnectionService connectionService, MessageService messages) {
         this.connectionService = connectionService;
+        this.messages = messages;
     }
 
     public void handle(final Message message) {
+        final Server server = message.getServer().orElseThrow(RuntimeException::new);
         try{
-            final Server server = message.getServer().orElseThrow(RuntimeException::new);
             final User author = message.getUserAuthor().orElseThrow();
 
             loadAndPlay(message, author.getConnectedVoiceChannel(server).orElseThrow());
         } catch (NoSuchElementException e) {
-            log.warn("error handling music: {}", e.getMessage());
+            log.error("error handling music: {}", e.getMessage());
             new MessageBuilder().addEmbed(
                     new EmbedBuilder()
-                            .setTitle(Constants.TITLE_ERROR)
-                            .setDescription("You have to be in a voice channel!")
+                            .setTitle(messages.get(server.getIdAsString(), "command.music.error.vc-required.title"))
+                            .setDescription(messages.get(server.getIdAsString(), "command.music.error.vc-required.description"))
                             .setColor(Constants.RED))
                     .send(message.getChannel());
         }
         catch (Exception e) {
-            log.warn("error handling music: {}", e.getMessage());
+            log.error("error handling music: {}", e.getMessage());
             new MessageBuilder().addEmbed(
                     new EmbedBuilder()
-                            .setTitle(Constants.TITLE_ERROR)
+                            .setTitle(messages.get(server.getIdAsString(), "command.music.loading.error.title"))
                             .setDescription(e.getMessage())
                             .setColor(Constants.RED))
                     .send(message.getChannel());
@@ -66,10 +66,9 @@ public class MusicService {
     public void skip(final ServerVoiceChannel voiceChannel, InteractionImmediateResponseBuilder response) {
         GuildAudioManager manager = connectionService.getGuildAudioManager(voiceChannel);
         manager.getScheduler().nextTrack();
-
         response
                 .addEmbed(new EmbedBuilder()
-                        .setTitle(String.format("%s Skipped", Constants.EMOJI_SUCCESS))
+                        .setTitle(messages.get(voiceChannel.getServer().getIdAsString(), "command.music.skip.title"))
                         .setColor(Constants.GREEN))
                 .respond();
     }
@@ -86,7 +85,7 @@ public class MusicService {
 
         response
                 .addEmbed(new EmbedBuilder()
-                        .setTitle(String.format("%s Removed", Constants.EMOJI_SUCCESS))
+                        .setTitle(messages.get(voiceChannel.getServer().getIdAsString(), "command.music.remove.title"))
                         .setDescription(sb.toString())
                         .setColor(Constants.GREEN))
                 .respond();
@@ -97,21 +96,23 @@ public class MusicService {
         if(audioManager.isPresent()) {
             GuildAudioManager manager = audioManager.get();
             boolean isPaused = !manager.getPlayer().isPaused();
-            String paused = isPaused?"Paused":"Unpaused";
+            String paused = isPaused ?
+                    messages.get(server.getIdAsString(), "command.music.pause.true.title") :
+                    messages.get(server.getIdAsString(), "command.music.pause.false.title");
             manager.getPlayer().setPaused(isPaused);
 
             log.info("[{}] {}", server.getName(), paused);
 
             response.addEmbed(
                     new EmbedBuilder()
-                            .setTitle(String.format("%s %s!", Constants.EMOJI_SUCCESS, paused))
+                            .setTitle(paused)
                             .setColor(Constants.GREEN))
                     .respond();
         } else {
             log.info("[{}] unable to pause: GuildAudioManager not found", server.getName());
             response.addEmbed(
                     new EmbedBuilder()
-                            .setTitle(String.format("%s There's nothing to pause!", Constants.EMOJI_WARNING))
+                            .setTitle(messages.get(server.getIdAsString(), "command.music.pause.warn.no-player"))
                             .setColor(Constants.YELLOW))
                     .setFlags(MessageFlag.EPHEMERAL)
                     .respond();
@@ -131,15 +132,15 @@ public class MusicService {
             response
                     .addEmbed(
                             new EmbedBuilder()
-                                    .setTitle(String.format("%s Stopped!", Constants.EMOJI_SUCCESS))
-                                    .setDescription("The queue has been cleared")
+                                    .setTitle(messages.get(server.getIdAsString(), "command.music.stop.title"))
+                                    .setDescription(messages.get(server.getIdAsString(), "command.music.stop.description"))
                                     .setColor(Constants.GREEN))
                     .respond();
         } else {
             log.info("[{}] unable to stop: GuildAudioManager not found", server.getName());
             response.addEmbed(
                             new EmbedBuilder()
-                                    .setTitle(String.format("%s There's nothing to stop!", Constants.EMOJI_WARNING))
+                                    .setTitle(messages.get(server.getIdAsString(), "command.music.stop.warn.no-player"))
                                     .setColor(Constants.YELLOW))
                     .setFlags(MessageFlag.EPHEMERAL)
                     .respond();
@@ -149,11 +150,10 @@ public class MusicService {
     public void loop(final ServerVoiceChannel voiceChannel, final InteractionImmediateResponseBuilder response) {
         GuildAudioManager manager = connectionService.getGuildAudioManager(voiceChannel);
         boolean loop = manager.getScheduler().toggleLoop();
-        String enabled = loop?"enabled":"disabled";
-        log.info("[{}] looping {}", voiceChannel.getServer().getName(), enabled);
+        log.info("[{}] looping {}", voiceChannel.getServer().getName(), loop);
         response.addEmbed(
                 new EmbedBuilder()
-                        .setTitle(String.format("%s Looping %s!", Constants.EMOJI_SUCCESS, enabled))
+                        .setTitle(messages.get(voiceChannel.getServer().getIdAsString(), String.format("command.music.loop.%b.title", loop)))
                         .setColor(Constants.GREEN))
                 .respond();
     }
@@ -180,17 +180,17 @@ public class MusicService {
 
             response.addEmbed(
                             new EmbedBuilder()
-                                    .setTitle(String.format("%s Current queue", Constants.EMOJI_SUCCESS))
+                                    .setTitle(messages.get(server.getIdAsString(), "command.music.queue.title"))
                                     .setDescription(sb.toString())
                                     .setColor(Constants.GREEN)
-                                    .setFooter(String.format("Time left: %s", totalTime))
+                                    .setFooter(messages.get(server.getIdAsString(), "command.music.queue.footer", totalTime))
                                     .setTimestamp(Instant.now().plus(totalTimeMs, ChronoUnit.MILLIS)))
                     .respond();
         } else {
-            log.info("[{}] unable to display queue: GuildAudioManager not found", server.getName());
+            log.info("[{}] unable to list queue: GuildAudioManager not found", server.getName());
             response.addEmbed(
                             new EmbedBuilder()
-                                    .setTitle(String.format("%s There's no queue!", Constants.EMOJI_WARNING))
+                                    .setTitle(messages.get(server.getIdAsString(), "command.music.queue.warn.no-player"))
                                     .setColor(Constants.YELLOW))
                     .respond();
         }
@@ -204,7 +204,7 @@ public class MusicService {
                 .loadItemOrdered(
                         manager,
                         identifier,
-                        new DefaultAudioLoadResultHandler(manager, connectionService, channel, identifier, message));
+                        new DefaultAudioLoadResultHandler(manager, connectionService, channel, identifier, messages, message));
     }
 
     public void replace(final ServerVoiceChannel channel, final long pos, final String query, InteractionImmediateResponseBuilder responder) {
@@ -215,7 +215,7 @@ public class MusicService {
                 .loadItemOrdered(
                         manager,
                         identifier,
-                        new ReplaceCommandAudioLoadResultHandler(manager, connectionService, channel, identifier, responder, pos));
+                        new ReplaceCommandAudioLoadResultHandler(manager, connectionService, channel, identifier, messages, responder, pos));
     }
 
     public void next(final ServerVoiceChannel channel, final String query, InteractionImmediateResponseBuilder responder) {
@@ -226,7 +226,7 @@ public class MusicService {
                 .loadItemOrdered(
                         manager,
                         identifier,
-                        new NextCommandAudioLoadResultHandler(manager, connectionService, channel, identifier, responder));
+                        new NextCommandAudioLoadResultHandler(manager, connectionService, channel, identifier, messages, responder));
     }
 
     public boolean isQueueEmpty(Server server) {

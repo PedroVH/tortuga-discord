@@ -2,6 +2,7 @@ package com.pedrovh.tortuga.discord.service.command.slash.music;
 
 import com.pedrovh.tortuga.discord.exception.BotException;
 import com.pedrovh.tortuga.discord.exception.QueueEmptyException;
+import com.pedrovh.tortuga.discord.service.i18n.MessageService;
 import com.pedrovh.tortuga.discord.service.guild.GuildPreferencesService;
 import com.pedrovh.tortuga.discord.service.music.MusicService;
 import com.pedrovh.tortuga.discord.service.command.slash.Slash;
@@ -17,8 +18,8 @@ public class Replace extends AbstractVoiceSlashCommand {
 
     private final MusicService service;
 
-    public Replace(GuildPreferencesService preferencesService, MusicService service) {
-        super(preferencesService);
+    public Replace(GuildPreferencesService preferencesService, MusicService service, MessageService messages) {
+        super(preferencesService, messages);
         this.service = service;
     }
 
@@ -32,14 +33,14 @@ public class Replace extends AbstractVoiceSlashCommand {
                 @Override
                 public EmbedBuilder getEmbed() {
                     return new EmbedBuilder()
-                            .setTitle(Constants.TITLE_ERROR)
-                            .setDescription("Track position must be >= 0!")
+                            .setTitle(messages.get(server.getIdAsString(), "command.music.replace.error.invalid-position.title"))
+                            .setDescription(messages.get(server.getIdAsString(), "command.music.replace.error.invalid-position.description"))
                             .setColor(Constants.RED);
                 }
             };
         }
         if(service.isQueueEmpty(server)) {
-            throw new QueueEmptyException();
+            throw new QueueEmptyException(server.getIdAsString(), messages);
         }
 
         service.replace(voiceChannel, pos, q, response);

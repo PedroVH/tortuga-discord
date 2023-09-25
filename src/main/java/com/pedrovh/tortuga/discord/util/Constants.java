@@ -16,18 +16,23 @@ public class Constants {
     public final String YOUTUBE_QUERY = "ytsearch: ";
 
     public final String EMOJI_SUCCESS = "✅";
-    public final String EMOJI_WARNING = "⚠️";
+    public final String EMOJI_WARNING = "\u26A0\uFE0F";
     public final String EMOJI_ERROR = "❌";
-    public final String EMOJI_PONG = "🏓";
-    public final String EMOJI_SONG = "🎶";
-    public final String EMOJI_INFO = "ℹ️";
+    public final String EMOJI_PONG = "\uD83C\uDFD3";
+    public final String EMOJI_SONG = "\uD83C\uDFB6";
+    public final String EMOJI_PLUS = "➕";
+    public final String EMOJI_LIST = "\uD83D\uDCCB";
+    public final String EMOJI_LOOP = "\uD83D\uDD01";
+    public final String EMOJI_INFO = "\u2139\uFE0F";
     public final String EMOJI_LIVE = "🔴";
-
-    // messages
-    public final String TITLE_ERROR = EMOJI_ERROR + " Error!";
 
     // events
     public final String EVENT_PLAYLIST_REPLACE = "playlist-replace-";
     public final String EVENT_CANCEL = "button-cancel";
+    public final String EVENT_LANGUAGE_MENU = "language-menu";
+
+    // langauges
+    public final String LANGUAGE_DEFAULT = "default";
+    public final String LANGUAGE_PT_BR = "pt_BR";
 
 }

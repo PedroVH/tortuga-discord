@@ -1,16 +1,15 @@
 package com.pedrovh.tortuga.discord.service;
 
+import com.pedrovh.tortuga.discord.service.command.slash.Slash;
 import com.pedrovh.tortuga.discord.service.listener.MessageComponentListener;
 import com.pedrovh.tortuga.discord.service.listener.MessageListener;
 import com.pedrovh.tortuga.discord.service.listener.SlashListener;
-import com.pedrovh.tortuga.discord.service.command.slash.Slash;
 import io.micronaut.context.annotation.Context;
 import io.micronaut.context.annotation.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.javacord.api.DiscordApi;
 import org.javacord.api.DiscordApiBuilder;
 import org.javacord.api.interaction.ApplicationCommand;
-import org.javacord.api.interaction.SlashCommand;
 import org.javacord.api.interaction.SlashCommandBuilder;
 
 import javax.annotation.PostConstruct;
@@ -24,7 +23,7 @@ public class DiscordService {
 
     @Value("${discord.token}")
     private String token;
-    @Value("${commands.updateAll}")
+    @Value("${commands.update-all}")
     private boolean updateCommands;
     private DiscordApi api;
 
@@ -54,22 +53,14 @@ public class DiscordService {
         log.info("bot ready!");
         log.info("current global slash commands: {}", api.getGlobalSlashCommands().join().stream().map(ApplicationCommand::getName).toList());
 
-        updateGlobalSlashCommands();
+        if(updateCommands)
+            updateGlobalSlashCommands();
     }
 
     void updateGlobalSlashCommands() {
-        final Set<SlashCommand> global = api.getGlobalSlashCommands().join();
-        final Set<String> newCommands = Arrays.stream(Slash.values())
-                .map(s -> s.name)
-                .filter(s -> global.stream().noneMatch(g->g.getName().equalsIgnoreCase(s)))
-                .collect(Collectors.toSet());
-
-        if(!newCommands.isEmpty() || updateCommands) {
-            log.info("adding the following global slash commands: {}", newCommands);
-            final Set<SlashCommandBuilder> toAdd = Arrays.stream(Slash.values()).map(Slash::build).collect(Collectors.toSet());
-            Set<ApplicationCommand> applicationCommands = api.bulkOverwriteGlobalApplicationCommands(toAdd).join();
-            log.info("updated all global slash commands: {}", applicationCommands.stream().map(ApplicationCommand::getName).collect(Collectors.toSet()));
-        }
+        final Set<SlashCommandBuilder> toAdd = Arrays.stream(Slash.values()).map(Slash::build).collect(Collectors.toSet());
+        Set<ApplicationCommand> applicationCommands = api.bulkOverwriteGlobalApplicationCommands(toAdd).join();
+        log.info("updated all global slash commands: {}", applicationCommands.stream().map(ApplicationCommand::getName).collect(Collectors.toSet()));
     }
 
 }

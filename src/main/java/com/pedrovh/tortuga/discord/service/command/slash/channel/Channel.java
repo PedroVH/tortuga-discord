@@ -2,9 +2,10 @@ package com.pedrovh.tortuga.discord.service.command.slash.channel;
 
 import com.pedrovh.tortuga.discord.exception.BotException;
 import com.pedrovh.tortuga.discord.model.guild.GuildPreferences;
-import com.pedrovh.tortuga.discord.service.command.slash.AbstractSlashCommand;
+import com.pedrovh.tortuga.discord.service.command.slash.AbstractSlashServerCommand;
 import com.pedrovh.tortuga.discord.service.command.slash.Slash;
 import com.pedrovh.tortuga.discord.service.guild.GuildPreferencesService;
+import com.pedrovh.tortuga.discord.service.i18n.MessageService;
 import com.pedrovh.tortuga.discord.util.Constants;
 import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
@@ -13,12 +14,12 @@ import org.javacord.api.interaction.SlashCommandInteractionOption;
 
 @Slf4j
 @Singleton
-public class Channel extends AbstractSlashCommand {
+public class Channel extends AbstractSlashServerCommand {
 
     private final GuildPreferencesService preferencesService;
 
-    public Channel(GuildPreferencesService preferencesService) {
-        super(true);
+    public Channel(GuildPreferencesService preferencesService, MessageService messages) {
+        super(messages);
         this.preferencesService = preferencesService;
     }
 
@@ -32,17 +33,16 @@ public class Channel extends AbstractSlashCommand {
         boolean choice = option.getBooleanValue().orElse(false);
         String musicChannelId = choice ? serverTextChannel.getIdAsString() : null;
 
-        GuildPreferences preferences = preferencesService.findById(server.getIdAsString()).orElse(new GuildPreferences());
-        preferences.setGuildId(server.getIdAsString());
+        GuildPreferences preferences = preferencesService.findById(server.getIdAsString()).orElse(new GuildPreferences(server.getIdAsString()));
         preferences.setMusicChannelId(musicChannelId);
         preferencesService.save(preferences);
 
         log.info("[{}] music channel changed to {}", server.getName(), musicChannelId == null ? "none" : serverTextChannel);
         response.addEmbed(
                 new EmbedBuilder()
-                        .setTitle(String.format(
-                                "%s Music channel changed to %s!",
-                                Constants.EMOJI_SUCCESS,
+                        .setTitle(messages.get(
+                                server.getIdAsString(),
+                                "command.channel.music.title",
                                 musicChannelId == null ? "none" : serverTextChannel))
                         .setColor(Constants.GREEN))
                 .respond();

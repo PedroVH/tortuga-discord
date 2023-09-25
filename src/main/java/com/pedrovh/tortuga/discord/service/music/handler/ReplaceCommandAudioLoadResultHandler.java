@@ -1,6 +1,7 @@
 package com.pedrovh.tortuga.discord.service.music.handler;
 
 import com.pedrovh.tortuga.discord.music.GuildAudioManager;
+import com.pedrovh.tortuga.discord.service.i18n.MessageService;
 import com.pedrovh.tortuga.discord.service.music.VoiceConnectionService;
 import com.pedrovh.tortuga.discord.util.Constants;
 import com.pedrovh.tortuga.discord.util.ResponseUtils;
@@ -20,9 +21,10 @@ public class ReplaceCommandAudioLoadResultHandler extends NextCommandAudioLoadRe
                                                 VoiceConnectionService connectionService,
                                                 ServerVoiceChannel voiceChannel,
                                                 String identifier,
+                                                MessageService messages,
                                                 InteractionImmediateResponseBuilder responder,
                                                 Long position) {
-        super(manager, connectionService, voiceChannel, identifier, responder);
+        super(manager, connectionService, voiceChannel, identifier, messages, responder);
         this.position = position;
     }
 
@@ -36,7 +38,7 @@ public class ReplaceCommandAudioLoadResultHandler extends NextCommandAudioLoadRe
         }
         manager.getScheduler().replaceTrack(position.intValue(), track);
         responder.addEmbed(new EmbedBuilder()
-                .setTitle(String.format("%s Track nº %d replaced by %s", Constants.EMOJI_SUCCESS, position+1, track.getInfo().title))
+                        .setTitle(messages.get(server.getIdAsString(), "command.music.replace.track.title", position+1, track.getInfo().title))
                         .setFooter(track.getInfo().author)
                         .setColor(Constants.GREEN))
                 .respond();
@@ -56,7 +58,7 @@ public class ReplaceCommandAudioLoadResultHandler extends NextCommandAudioLoadRe
             sb.append(i+1).append(". ").append(playlist.getTracks().get(i)).append("\n");
 
         responder.addEmbed(new EmbedBuilder()
-                        .setTitle(String.format("%s Track nº %d replaced by playlist %s", Constants.EMOJI_SUCCESS, position+1, playlist.getName()))
+                        .setTitle(messages.get(server.getIdAsString(), "command.music.replace.playlist.title", position+1, playlist.getName()))
                         .setDescription(sb.toString())
                         .setColor(Constants.GREEN))
                 .respond();

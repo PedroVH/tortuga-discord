@@ -1,6 +1,7 @@
 package com.pedrovh.tortuga.discord.service.music.handler;
 
 import com.pedrovh.tortuga.discord.music.GuildAudioManager;
+import com.pedrovh.tortuga.discord.service.i18n.MessageService;
 import com.pedrovh.tortuga.discord.service.music.VoiceConnectionService;
 import com.pedrovh.tortuga.discord.util.AudioTrackUtils;
 import com.pedrovh.tortuga.discord.util.Constants;
@@ -21,8 +22,9 @@ public class NextCommandAudioLoadResultHandler extends AbstractCommandAudioLoadR
                                              VoiceConnectionService connectionService,
                                              ServerVoiceChannel channel,
                                              String identifier,
+                                             MessageService messages,
                                              InteractionImmediateResponseBuilder responder) {
-        super(manager, connectionService, channel, identifier, responder);
+        super(manager, connectionService, channel, identifier, messages, responder);
     }
 
     @Override
@@ -49,7 +51,7 @@ public class NextCommandAudioLoadResultHandler extends AbstractCommandAudioLoadR
 
         responder.addEmbed(
                         new EmbedBuilder()
-                                .setTitle(String.format("%s %s Tracks added to the start of the queue", Constants.EMOJI_SONG, tracks.size()))
+                                .setTitle(messages.get(server.getIdAsString(), "command.music.next.playlist.title", tracks.size()))
                                 .setDescription(sb.toString())
                                 .setColor(Constants.GREEN))
                 .respond();
