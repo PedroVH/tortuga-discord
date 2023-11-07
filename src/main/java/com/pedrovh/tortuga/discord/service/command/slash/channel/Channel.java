@@ -29,21 +29,19 @@ public class Channel extends AbstractSlashServerCommand {
     }
 
     protected void optionMusic(SlashCommandInteractionOption option) {
-
-        boolean choice = option.getBooleanValue().orElse(false);
-        String musicChannelId = choice ? serverTextChannel.getIdAsString() : null;
+        String musicChannelId = serverTextChannel.getIdAsString();
 
         GuildPreferences preferences = preferencesService.findById(server.getIdAsString()).orElse(new GuildPreferences(server.getIdAsString()));
         preferences.setMusicChannelId(musicChannelId);
         preferencesService.save(preferences);
 
-        log.info("[{}] music channel changed to {}", server.getName(), musicChannelId == null ? "none" : serverTextChannel);
+        log.info("[{}] music channel changed to {}", server.getName(), serverTextChannel);
         response.addEmbed(
                 new EmbedBuilder()
                         .setTitle(messages.get(
                                 server.getIdAsString(),
                                 "command.channel.music.title",
-                                musicChannelId == null ? "none" : serverTextChannel))
+                                serverTextChannel.getName()))
                         .setColor(Constants.GREEN))
                 .respond();
     }

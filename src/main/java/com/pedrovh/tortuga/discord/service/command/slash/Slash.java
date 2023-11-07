@@ -27,10 +27,9 @@ public enum Slash {
             "A command dedicated to channels",
             Channel.class,
             EnumSet.of(PermissionType.ADMINISTRATOR),
-            SlashCommandOption.createBooleanOption(
+            SlashCommandOption.createSubcommand(
                     Slash.OPTION_MUSIC,
-                    "Whether this channel should be used for music or not",
-                    true)),
+                    "Whether this channel should be used for music or not")),
     COMMAND_CLEAR(
             "clear",
             "Deletes latest messages from the text channel",
