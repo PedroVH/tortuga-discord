@@ -16,8 +16,9 @@ public abstract class AbstractCommandAudioLoadResultHandler extends AbstractAudi
                                                  ServerVoiceChannel voiceChannel,
                                                  String identifier,
                                                  MessageService messages,
-                                                 InteractionImmediateResponseBuilder responder) {
-        super(manager, connectionService, voiceChannel, identifier, messages);
+                                                 InteractionImmediateResponseBuilder responder,
+                                                 long atPosition) {
+        super(manager, connectionService, voiceChannel, identifier, messages, atPosition);
         this.responder = responder;
     }
 

@@ -24,8 +24,9 @@ public class DefaultAudioLoadResultHandler extends AbstractAudioLoadResultHandle
                                          ServerVoiceChannel voiceChannel,
                                          String identifier,
                                          MessageService messages,
-                                         Message message) {
-        super(manager, connectionService, voiceChannel, identifier, messages);
+                                         Message message,
+                                         long atPosition) {
+        super(manager, connectionService, voiceChannel, identifier, messages, atPosition);
 
         this.message = message;
     }
@@ -37,7 +38,7 @@ public class DefaultAudioLoadResultHandler extends AbstractAudioLoadResultHandle
 
     @Override
     protected void handlePlaylistLoaded(AudioPlaylist playlist) {
-        List<AudioTrack> tracks = manager.getScheduler().queuePlaylist(playlist);
+        List<AudioTrack> tracks = manager.getScheduler().queuePlaylist(playlist, atPosition);
         StringBuilder sb = new StringBuilder();
         tracks.forEach(track -> sb.append(track.getInfo().title).append("\n"));
 

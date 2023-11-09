@@ -53,6 +53,10 @@ public class VoiceConnectionService {
 //        playerManager.registerSourceManager(new LocalAudioSourceManager());
     }
 
+    /**
+     * Disconnects the bot from the voice channel, clears the queue and any cache regarding the voice connection.
+     * @param voiceChannel the voice channel to attempt disconnection
+     */
     public void leaveVoiceChannel(ServerVoiceChannel voiceChannel) {
         String id = voiceChannel.getServer().getIdAsString();
 
@@ -65,7 +69,16 @@ public class VoiceConnectionService {
             voiceChannel.disconnect().join();
     }
 
+    /**
+     * Creates a AudioConnection to the voice channel.
+     * @param channel the channel to connect
+     * @param source the server voice channel's audio source
+     */
     public void createAudioConnection(ServerVoiceChannel channel, AudioSource source) {
+        // if not connected, remove connection from cache
+        if(!channel.isConnected(channel.getApi().getYourself()))
+            leaveVoiceChannel(channel);
+
         connections.computeIfAbsent(channel.getServer().getIdAsString(), (f) -> {
             log.info("[{}] connecting to voice channel {}", channel.getServer().getName(), channel.getName());
             return channel.connect().join();
@@ -76,6 +89,11 @@ public class VoiceConnectionService {
             connection.setAudioSource(source);
     }
 
+    /**
+     * Creates an audio manager if absent, and returns the cached server's AudioManager.
+     * @param channel the connected server voice channel
+     * @return the cached audio manager
+     */
     public GuildAudioManager getGuildAudioManager(ServerVoiceChannel channel) {
         String guildId = channel.getServer().getIdAsString();
         if(audioManagers.containsKey(guildId))
@@ -86,6 +104,11 @@ public class VoiceConnectionService {
         return audioManager;
     }
 
+    /**
+     * Tries to find the guilds audio manager in cache.
+     * @param guildId
+     * @return an optional of the GuildAudioManager. If not found in cache, returns an empty optional.
+     */
     public Optional<GuildAudioManager> getGuildAudioManager(String guildId) {
         return Optional.ofNullable(audioManagers.get(guildId));
     }

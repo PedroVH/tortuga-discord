@@ -10,7 +10,7 @@ import org.javacord.api.entity.message.embed.EmbedBuilder;
 public class ResponseUtils {
 
     public EmbedBuilder getPLayingEmbed(AudioTrack track) {
-        String duration = track.getInfo().isStream ? Constants.EMOJI_LIVE + "Live" : AudioTrackUtils.formatTrackDuration(track.getDuration());
+        String duration = track.getInfo().isStream ? Constants.EMOJI_LIVE + "Live" : AudioTrackUtils.formatTimeDuration(track.getDuration() - track.getPosition());
         return new EmbedBuilder()
                 .setTitle(String.format(
                         "%s [%s] %s",

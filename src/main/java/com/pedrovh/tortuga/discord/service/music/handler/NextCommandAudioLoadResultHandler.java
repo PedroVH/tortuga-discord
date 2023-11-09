@@ -23,8 +23,9 @@ public class NextCommandAudioLoadResultHandler extends AbstractCommandAudioLoadR
                                              ServerVoiceChannel channel,
                                              String identifier,
                                              MessageService messages,
-                                             InteractionImmediateResponseBuilder responder) {
-        super(manager, connectionService, channel, identifier, messages, responder);
+                                             InteractionImmediateResponseBuilder responder,
+                                             long atPosition) {
+        super(manager, connectionService, channel, identifier, messages, responder, atPosition);
     }
 
     @Override

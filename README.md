@@ -23,3 +23,7 @@ correctly, open up a terminal and run `java -jar tortuga-discord.jar`.
 You can also authenticate the bot with a Google account, so you can stream mature content! 
 * Set the `DISCORD_GOOGLE_USERNAME` environment variable to your google e-mail.
 * Set the `DISCORD_GOOGLE_PASSWORD` environment variable to your google password. 
+
+# Known Issues
+* The bot doesn't work correctly if moved. Only fix is to restart the application.
+* The bot doesn't work correctly if disconnected via discord's GUI. Please, use the /leave command to disconnect the bot.

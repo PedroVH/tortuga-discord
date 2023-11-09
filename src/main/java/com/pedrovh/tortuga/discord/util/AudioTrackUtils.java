@@ -13,7 +13,7 @@ import java.util.List;
 @UtilityClass
 public class AudioTrackUtils {
 
-    public String formatTrackDuration(Long millis) {
+    public String formatTimeDuration(Long millis) {
         Duration duration = Duration.ofMillis(millis);
         long hours = duration.toHours();
         long minutes = duration.toMinutesPart();
