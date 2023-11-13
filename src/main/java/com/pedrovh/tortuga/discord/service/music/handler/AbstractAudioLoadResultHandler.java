@@ -22,27 +22,23 @@ public abstract class AbstractAudioLoadResultHandler implements AudioLoadResultH
     protected final String identifier;
     protected final MessageService messages;
     protected final Server server;
-    protected final long atPosition;
 
     public AbstractAudioLoadResultHandler(GuildAudioManager manager,
                                           VoiceConnectionService connectionService,
                                           ServerVoiceChannel voiceChannel,
                                           String identifier,
-                                          MessageService messages,
-                                          long atPosition) {
+                                          MessageService messages) {
         this.manager = manager;
         this.connectionService = connectionService;
         this.voiceChannel = voiceChannel;
         this.identifier = identifier;
         this.messages = messages;
         this.server = voiceChannel.getServer();
-        this.atPosition = atPosition;
     }
 
     @Override
     public void trackLoaded(AudioTrack track) {
         connectionService.createAudioConnection(voiceChannel, manager.getSource());
-        track.setPosition(atPosition);
         handleTrackLoaded(track);
     }
 

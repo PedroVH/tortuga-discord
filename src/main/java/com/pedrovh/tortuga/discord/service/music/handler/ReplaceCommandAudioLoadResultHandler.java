@@ -23,9 +23,8 @@ public class ReplaceCommandAudioLoadResultHandler extends NextCommandAudioLoadRe
                                                 String identifier,
                                                 MessageService messages,
                                                 InteractionImmediateResponseBuilder responder,
-                                                Long position,
-                                                long atPosition) {
-        super(manager, connectionService, voiceChannel, identifier, messages, responder, atPosition);
+                                                Long position) {
+        super(manager, connectionService, voiceChannel, identifier, messages, responder);
         this.position = position;
     }
 

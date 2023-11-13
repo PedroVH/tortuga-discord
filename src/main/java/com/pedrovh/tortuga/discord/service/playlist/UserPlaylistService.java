@@ -117,19 +117,18 @@ public class UserPlaylistService {
         final Playlist playlist = optionalPlaylist.get();
         final GuildAudioManager manager = connectionService.getGuildAudioManager(channel);
         for(Track track : playlist.getTracks()) {
-            String identifier = musicService.getIdentifier(track.getUrl());
             connectionService.getPlayerManager()
                     .loadItemOrdered(
                             manager,
-                            identifier,
-                            new AbstractCommandAudioLoadResultHandler(manager, connectionService, channel, track.getUrl(), messages, response, musicService.getTimePosition(identifier)) {
+                            musicService.getIdentifier(track.getUrl()),
+                            new AbstractCommandAudioLoadResultHandler(manager, connectionService, channel, track.getUrl(), messages, response) {
                                 @Override
                                 protected void handleTrackLoaded(AudioTrack track) {
                                     manager.getScheduler().queue(track, false);
                                 }
                                 @Override
                                 protected void handlePlaylistLoaded(AudioPlaylist playlist) {
-                                    manager.getScheduler().queuePlaylist(playlist, atPosition);
+                                    manager.getScheduler().queuePlaylist(playlist);
                                 }
                             });
         }

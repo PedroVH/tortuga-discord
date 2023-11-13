@@ -69,7 +69,7 @@ public class TrackScheduler extends AudioEventAdapter {
                 textChannel.sendMessage(ResponseUtils.getAddedToPlaylistEmbed(track));
         } else {
             latestEndOfQueue = null;
-            log.info("[{}] playing {} - starting at {}ms", server.getName(), track.getInfo().title, track.getPosition());
+            log.info("[{}] playing {}", server.getName(), track.getInfo().title);
             if(notify)
                 textChannel.sendMessage(ResponseUtils.getPLayingEmbed(track));
         }
@@ -89,10 +89,9 @@ public class TrackScheduler extends AudioEventAdapter {
         queue.clear();
     }
 
-    public List<AudioTrack> queuePlaylist(AudioPlaylist playlist, long firstTrackPosition) {
+    public List<AudioTrack> queuePlaylist(AudioPlaylist playlist) {
         List<AudioTrack> tracks = AudioTrackUtils.getTracksAfterSelectedTrack(playlist);
-        if(!tracks.isEmpty())
-            tracks.get(0).setPosition(firstTrackPosition);
+
         log.info("[{}] adding playlist {} to queue", server.getName(), playlist.getName());
         tracks.forEach(queue::offer);
 

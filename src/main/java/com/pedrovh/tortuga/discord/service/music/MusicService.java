@@ -8,7 +8,6 @@ import com.pedrovh.tortuga.discord.service.music.handler.ReplaceCommandAudioLoad
 import com.pedrovh.tortuga.discord.util.AudioTrackUtils;
 import com.pedrovh.tortuga.discord.util.Constants;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
-import io.micronaut.context.annotation.Value;
 import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
 import org.javacord.api.entity.channel.ServerVoiceChannel;
@@ -32,8 +31,6 @@ public class MusicService {
 
     private final VoiceConnectionService connectionService;
     private final MessageService messages;
-    @Value("${bot.track.seek-time-position}")
-    boolean seekPosition;
 
     public MusicService(VoiceConnectionService connectionService, MessageService messages) {
         this.connectionService = connectionService;
@@ -179,7 +176,7 @@ public class MusicService {
                 totalTimeMs += track.getDuration();
             }
 
-            String totalTime = AudioTrackUtils.formatTimeDuration(totalTimeMs);
+            String totalTime = AudioTrackUtils.formatTrackDuration(totalTimeMs);
 
             response.addEmbed(
                             new EmbedBuilder()
@@ -207,7 +204,7 @@ public class MusicService {
                 .loadItemOrdered(
                         manager,
                         identifier,
-                        new DefaultAudioLoadResultHandler(manager, connectionService, channel, identifier, messages, message, getTimePosition(identifier)));
+                        new DefaultAudioLoadResultHandler(manager, connectionService, channel, identifier, messages, message));
     }
 
     public void replace(final ServerVoiceChannel channel, final long pos, final String query, InteractionImmediateResponseBuilder responder) {
@@ -218,7 +215,7 @@ public class MusicService {
                 .loadItemOrdered(
                         manager,
                         identifier,
-                        new ReplaceCommandAudioLoadResultHandler(manager, connectionService, channel, identifier, messages, responder, pos, getTimePosition(identifier)));
+                        new ReplaceCommandAudioLoadResultHandler(manager, connectionService, channel, identifier, messages, responder, pos));
     }
 
     public void next(final ServerVoiceChannel channel, final String query, InteractionImmediateResponseBuilder responder) {
@@ -229,7 +226,7 @@ public class MusicService {
                 .loadItemOrdered(
                         manager,
                         identifier,
-                        new NextCommandAudioLoadResultHandler(manager, connectionService, channel, identifier, messages, responder, getTimePosition(identifier)));
+                        new NextCommandAudioLoadResultHandler(manager, connectionService, channel, identifier, messages, responder));
     }
 
     public boolean isQueueEmpty(Server server) {
@@ -246,18 +243,5 @@ public class MusicService {
             return Constants.YOUTUBE_QUERY.concat(content);
         }
         return content;
-    }
-
-    public long getTimePosition(String identifier) {
-        try {
-            if(seekPosition && identifier.matches("t=[0-9]*s?")) {
-                String[] split = identifier.split("t=");
-                if(split.length > 0)
-                    return Long.parseLong(split[split.length - 1].replace("s", "")) * 1000;
-            }
-        } catch (Exception ex) {
-            log.error("Error reading duration from URL", ex);
-        }
-        return 0;
     }
 }
