@@ -23,7 +23,7 @@ public class ResponseUtils {
 
     public EmbedBuilder getAddedToPlaylistEmbed(AudioTrack track) {
         return new EmbedBuilder()
-                .setTitle(String.format("%s %s %s", Constants.EMOJI_SONG, Constants.EMOJI_LIST, track.getInfo().title))
+                .setTitle(String.format("%s %s", Constants.EMOJI_LIST, track.getInfo().title))
                 .setDescription(track.getInfo().author)
                 .setColor(Constants.GREEN);
     }
